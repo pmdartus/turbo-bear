@@ -1,0 +1,11 @@
+// Pest syntax: https://docs.rs/pest_derive/2.1.0/pest_derive/
+
+float = ${ float_characteristic ~ "." ~ float_mantissa }
+    float_characteristic = { "0" | ('1'..'9') ~ ('0'..'9')* }
+    float_mantissa = { ('0'..'9')+ }
+
+integer = ${ "0" | ('1'..'9') ~ ('0'..'9')* }
+
+boolean = { boolean_true | boolean_false }
+    boolean_true = { "true" }
+    boolean_false = { "false" }
