@@ -1,11 +1,38 @@
-// Pest syntax: https://docs.rs/pest_derive/2.1.0/pest_derive/
+// Pest syntax: 
+// https://docs.rs/pest_derive/2.1.0/pest_derive/
+// https://pest.rs/book/grammars/syntax.html
+
+plus            = { "+" }
+minus           = { "-" }
+star            = { "*" }
+slash           = { "/" }
+equal           = { "=" }
+equal_equal     = { "==" }
+bang            = { "!" }
+bang_equal      = { "!=" }
+greater         = { ">" }
+greater_equal   = { ">=" }
+less            = { "<" }
+less_equal      = { "<=" }
+and             = { "&&" }
+or              = { "||" }
+
+expression = { logical_or }
+    logical_or  = { logical_and ~ (or ~ logical_and)* }
+    logical_and = { equality ~ (and ~ equality)* }
+    equality    = { comparison ~ ((equal_equal | bang_equal) ~ comparison)* }
+    comparison  = { term ~ ((greater | greater_equal | less | less_equal) ~ term)* }
+    term        = { factor ~ (( plus | minus) ~ factor)* }
+    factor      = { unary ~ ((star | slash) ~ unary)* }
+    unary       = { ((bang | minus) ~ unary) | primary }
+    primary     = _{ boolean | float | integer | "(" ~ expression ~ ")" }
 
 float = ${ float_characteristic ~ "." ~ float_mantissa }
-    float_characteristic = { "0" | ('1'..'9') ~ ('0'..'9')* }
-    float_mantissa = { ('0'..'9')+ }
+    float_characteristic = { "0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT* }
+    float_mantissa = { ASCII_DIGIT+ }
 
-integer = ${ "0" | ('1'..'9') ~ ('0'..'9')* }
+integer = ${ "0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT* }
 
-boolean = { boolean_true | boolean_false }
-    boolean_true = { "true" }
-    boolean_false = { "false" }
+boolean = { "true" | "false" }
+
+WHITESPACE = _{ " " | "\t" }
