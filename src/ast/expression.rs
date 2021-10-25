@@ -1,4 +1,4 @@
-use pest::iterators::Pair;
+use pest::{iterators::{Pair, Pairs}, prec_climber::{Assoc, Operator, PrecClimber}};
 
 use crate::grammar::Rule;
 
@@ -12,10 +12,13 @@ pub enum LogicalOperator {
 
 impl<'a> From<Pair<'a, Rule>> for LogicalOperator {
     fn from(pair: Pair<Rule>) -> Self {
-        match pair.as_rule() {
+        let mut inner = pair.into_inner();
+        let next = inner.next().unwrap();
+
+        match next.as_rule() {
             Rule::and => LogicalOperator::And,
             Rule::or => LogicalOperator::Or,
-            _ => unreachable!("Invalid logical operator {:?}", pair),
+            _ => unreachable!("Invalid logical operator {:?}", next),
         }
     }
 }
@@ -54,14 +57,14 @@ pub enum UnaryOperator {
     Minus,
 }
 
-impl<'a> TryFrom<Pair<'a, Rule>> for UnaryOperator {
-    type Error = ();
+impl<'a> From<Pair<'a, Rule>> for UnaryOperator {
+    fn from(pair: Pair<'a, Rule>) -> Self {
+        let inner = pair.into_inner().next().unwrap();
 
-    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
-        match pair.as_rule() {
-            Rule::bang => Ok(UnaryOperator::Not),
-            Rule::minus => Ok(UnaryOperator::Minus),
-            _ => Err(()),
+        match inner.as_rule() {
+            Rule::bang => UnaryOperator::Not,
+            Rule::minus => UnaryOperator::Minus,
+            _ => unreachable!("Invalid unary operator {:?}", inner),
         }
     }
 }
@@ -77,6 +80,26 @@ impl Locatable for Expression {
         &self.location
     }
 }
+
+lazy_static! {
+    static ref PREC_CLIMBER: PrecClimber<Rule> = {
+        use Assoc::*;
+        use Rule::*;
+
+        PrecClimber::new(vec![
+            Operator::new(or, Left),
+            Operator::new(and, Left),
+            Operator::new(equal_equal, Left) | Operator::new(bang_equal, Left),
+            Operator::new(greater, Left)
+                | Operator::new(greater_equal, Left)
+                | Operator::new(less, Left)
+                | Operator::new(less_equal, Left),
+            Operator::new(plus, Left) | Operator::new(minus, Left),
+            Operator::new(star, Left) | Operator::new(slash, Left),
+        ])
+    };
+}
+
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Expr {
@@ -108,65 +131,50 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
                 let inner = pair.into_inner().next().unwrap();
                 Self::from(inner)
             }
-            Rule::logical_or | Rule::logical_and => {
-                let mut inner = pair.into_inner();
-                let mut expr = Self::from(inner.next().unwrap());
 
-                while let Some(op) = inner.next() {
-                    let operator = LogicalOperator::from(op);
-                    let right = Self::from(inner.next().unwrap());
-                    let location = [expr.location[0], right.location[1]];
+            Rule::binary => {
+                let inner = pair.into_inner();
+                let res: Vec<Pair<Rule>> = inner.clone().collect();
+                println!("{:#?}",res);
+                return PREC_CLIMBER.climb(
+                    inner,
+                    |pair: Pair<Rule>| Expression::from(pair),
+                    |lhs: Expression, op: Pair<Rule>, rhs: Expression|{
+                        let location = [lhs.location[0], rhs.location[1]];
 
-                    expr = Expression {
-                        expression: Expr::Logical {
-                            operator,
-                            left: Box::new(expr),
-                            right: Box::new(right),
-                        },
-                        location,
-                    }
-                }
+                        return Expression {
+                            expression: Expr::Binary {
+                                operator: BinaryOperator::from(op),
+                                left: Box::new(lhs),
+                                right: Box::new(rhs),
+                            },
+                            location
+                        } 
+                    },
+                )
+            },
 
-                expr
-            }
-            Rule::equality | Rule::comparison | Rule::term | Rule::factor => {
-                let mut inner = pair.into_inner();
-                let mut expr = Self::from(inner.next().unwrap());
-
-                while let Some(op) = inner.next() {
-                    let operator = BinaryOperator::from(op);
-                    let right = Self::from(inner.next().unwrap());
-                    let location = [expr.location[0], right.location[1]];
-
-                    expr = Expression {
-                        expression: Expr::Binary {
-                            operator,
-                            left: Box::new(expr),
-                            right: Box::new(right),
-                        },
-                        location,
-                    }
-                }
-
-                expr
-            }
             Rule::unary => {
                 let mut inner = pair.into_inner();
                 let next = inner.next().unwrap();
 
-                match UnaryOperator::try_from(next.clone()) {
-                    Ok(operator) => {
-                        let expression = Self::from(inner.next().unwrap());
+                // TODO: Clean this up
+                if next.as_rule() == Rule::unary_operator {
+                    let start = next.as_span().start();
+                    let operator = UnaryOperator::from(next);
+                    let expression = Self::from(inner.next().unwrap());
+                    let location = [start, expression.location[1]];
 
-                        Expression {
-                            expression: Expr::Unary {
-                                operator,
-                                expression: Box::new(expression),
-                            },
-                            location,
-                        }
+                    Expression {
+                        expression: Expr::Unary {
+                            operator,
+                            expression: Box::new(expression),
+                        },
+                        location
                     }
-                    _ => Self::from(next),
+                    
+                } else {
+                    Self::from(next)
                 }
             }
             Rule::integer => {

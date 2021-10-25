@@ -2,6 +2,8 @@
 // https://docs.rs/pest_derive/2.1.0/pest_derive/
 // https://pest.rs/book/grammars/syntax.html
 
+whole_expression = _{ SOI ~ expression ~ EOI }
+
 plus            = { "+" }
 minus           = { "-" }
 star            = { "*" }
@@ -17,14 +19,13 @@ less_equal      = { "<=" }
 and             = { "&&" }
 or              = { "||" }
 
-expression = { logical_or }
-    logical_or  = { logical_and ~ (or ~ logical_and)* }
-    logical_and = { equality ~ (and ~ equality)* }
-    equality    = { comparison ~ ((equal_equal | bang_equal) ~ comparison)* }
-    comparison  = { term ~ ((greater | greater_equal | less | less_equal) ~ term)* }
-    term        = { factor ~ (( plus | minus) ~ factor)* }
-    factor      = { unary ~ ((star | slash) ~ unary)* }
-    unary       = { ((bang | minus) ~ unary) | primary }
+unary_operator =    { bang | minus }
+binary_operator =   { plus | minus | star | slash | equal_equal | bang_equal | greater | 
+                      greater_equal | less | less_equal | and | or }
+
+expression = { binary }
+    binary      = { unary ~ (binary_operator ~ unary)* }
+    unary       = { (unary_operator ~ unary) | primary }
     primary     = _{ boolean | float | integer | "(" ~ expression ~ ")" }
 
 float = ${ float_characteristic ~ "." ~ float_mantissa }
