@@ -3,7 +3,7 @@ use pest::iterators::Pair;
 use crate::grammar::{Rule};
 use super::{Locatable, Location, pair_to_location};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Integer {
     pub value: u32,
     pub location: Location,
@@ -38,10 +38,11 @@ mod tests {
     #[test]
     fn parse_integer() {
         let pair = Grammar::parse(Rule::integer, "123456").unwrap().next().unwrap();
+        
         let int = Integer::from(pair);
-
-        assert_eq!(int.value, 123456);
-        assert_eq!(int.location[0], 0);
-        assert_eq!(int.location[1], 6);
+        assert_eq!(int, Integer {
+            value: 123456,
+            location: [0, 6]
+        });
     }
 }

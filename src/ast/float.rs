@@ -1,13 +1,21 @@
 use pest::iterators::Pair;
 
-use crate::grammar::{Rule};
-use super::{Locatable, Location, pair_to_location};
+use super::{pair_to_location, Locatable, Location};
+use crate::grammar::Rule;
 
 #[derive(Debug)]
 pub struct Float {
     pub value: f32,
     pub location: Location,
 }
+
+impl PartialEq for Float {
+    fn eq(&self, other: &Self) -> bool {
+        self.value - other.value < std::f32::EPSILON && self.location.eq(&other.location)
+    }
+}
+
+impl Eq for Float {}
 
 impl<'a> From<Pair<'a, Rule>> for Float {
     fn from(pair: Pair<Rule>) -> Self {
@@ -32,16 +40,20 @@ impl Locatable for Float {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{grammar::{Grammar, Rule}};
+    use crate::grammar::{Grammar, Rule};
     use pest::Parser;
 
     #[test]
     fn parse_float() {
-        let pair = Grammar::parse(Rule::float, "123456.789").unwrap().next().unwrap();
-        let float = Float::from(pair);
+        let pair = Grammar::parse(Rule::float, "123456.789")
+            .unwrap()
+            .next()
+            .unwrap();
 
-        assert!((float.value - 123456.789).abs() < std::f32::EPSILON);
-        assert_eq!(float.location[0], 0);
-        assert_eq!(float.location[1], 10);
+        let float = Float::from(pair);
+        assert_eq!(float, Float { 
+            value: 123456.789,
+            location: [0, 10]
+        });
     }
 }

@@ -3,7 +3,7 @@ use pest::iterators::Pair;
 use super::{pair_to_location, Locatable, Location};
 use crate::grammar::Rule;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Boolean {
     pub value: bool,
     pub location: Location,
@@ -51,11 +51,15 @@ mod tests {
             .unwrap()
             .next()
             .unwrap();
-        let boolean = Boolean::from(pair);
 
-        assert_eq!(boolean.value, true);
-        assert_eq!(boolean.location[0], 0);
-        assert_eq!(boolean.location[1], 4);
+        let boolean = Boolean::from(pair);
+        assert_eq!(
+            boolean,
+            Boolean {
+                value: true,
+                location: [0, 4]
+            }
+        );
     }
 
     #[test]
@@ -64,10 +68,14 @@ mod tests {
             .unwrap()
             .next()
             .unwrap();
-        let boolean = Boolean::from(pair);
 
-        assert_eq!(boolean.value, false);
-        assert_eq!(boolean.location[0], 0);
-        assert_eq!(boolean.location[1], 5);
+        let boolean = Boolean::from(pair);
+        assert_eq!(
+            boolean,
+            Boolean {
+                value: false,
+                location: [0, 5]
+            }
+        );
     }
 }
