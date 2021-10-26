@@ -1,6 +1,6 @@
 use pest::iterators::Pair;
 
-use super::{pair_to_location, Locatable, Location};
+use super::{Locatable, Location};
 use crate::grammar::Rule;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -14,7 +14,7 @@ impl<'a> From<Pair<'a, Rule>> for Boolean {
         match pair.as_rule() {
             Rule::boolean => {
                 let str = pair.as_str();
-                let location = pair_to_location(&pair);
+                let location = Location::from(&pair);
 
                 match str {
                     "true" => Boolean {
@@ -57,7 +57,7 @@ mod tests {
             boolean,
             Boolean {
                 value: true,
-                location: [0, 4]
+                location: Location::new(0, 4)
             }
         );
     }
@@ -74,7 +74,7 @@ mod tests {
             boolean,
             Boolean {
                 value: false,
-                location: [0, 5]
+                location: Location::new(0, 5)
             }
         );
     }

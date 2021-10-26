@@ -1,6 +1,6 @@
 use pest::iterators::Pair;
 
-use super::{pair_to_location, Locatable, Location};
+use super::{Locatable, Location};
 use crate::grammar::Rule;
 
 #[derive(Debug)]
@@ -22,7 +22,7 @@ impl<'a> From<Pair<'a, Rule>> for Float {
         match pair.as_rule() {
             Rule::float => {
                 let value: f32 = pair.as_str().to_owned().parse().unwrap();
-                let location = pair_to_location(&pair);
+                let location = Location::from(&pair);
 
                 Float { value, location }
             }
@@ -53,7 +53,7 @@ mod tests {
         let float = Float::from(pair);
         assert_eq!(float, Float { 
             value: 123456.789,
-            location: [0, 10]
+            location: Location::new(0, 10)
         });
     }
 }

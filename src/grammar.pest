@@ -20,7 +20,7 @@ and             = { "&&" }
 or              = { "||" }
 
 unary_operator =    { bang | minus }
-binary_operator =   { plus | minus | star | slash | equal_equal | bang_equal | greater | 
+binary_operator =   _{ plus | minus | star | slash | equal_equal | bang_equal | greater | 
                       greater_equal | less | less_equal | and | or }
 
 expression = { binary }
