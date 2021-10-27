@@ -19,11 +19,13 @@ less_equal      = { "<=" }
 and             = { "&&" }
 or              = { "||" }
 
-unary_operator =    { bang | minus }
-binary_operator =   _{ plus | minus | star | slash | equal_equal | bang_equal | greater | 
-                      greater_equal | less | less_equal | and | or }
+unary_operator      =  { bang | minus }
+logical_operator    =  _{ and | or }
+binary_operator     =  _{ plus | minus | star | slash | equal_equal | bang_equal | greater | 
+                          greater_equal | less | less_equal }
 
-expression = { binary }
+expression = { logical | binary | unary }
+    logical     = { binary ~ (logical_operator ~ binary)* }
     binary      = { unary ~ (binary_operator ~ unary)* }
     unary       = { (unary_operator ~ unary) | primary }
     primary     = _{ boolean | float | integer | "(" ~ expression ~ ")" }

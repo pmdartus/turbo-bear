@@ -56,6 +56,8 @@ impl<'ctx> CodeGen<'ctx> {
 
     fn build_expression(&self, expression: &Expression) -> IntValue {
         match &expression.expression {
+            crate::ast::Expr::Logical { .. } => todo!(),
+
             crate::ast::Expr::Binary { operator, left, right } => {
                 let lhs = self.build_expression(left);
                 let rhs = self.build_expression(right);
@@ -70,8 +72,6 @@ impl<'ctx> CodeGen<'ctx> {
                     crate::ast::BinaryOperator::GreaterEqual => todo!(),
                     crate::ast::BinaryOperator::Less => todo!(),
                     crate::ast::BinaryOperator::LessEqual => todo!(),
-                    crate::ast::BinaryOperator::And => todo!(),
-                    crate::ast::BinaryOperator::Or => todo!(),
                 }
             },
             crate::ast::Expr::Unary { operator, expression } => {

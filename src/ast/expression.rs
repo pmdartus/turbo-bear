@@ -9,6 +9,22 @@ use crate::grammar::{Grammar, Rule};
 use super::{Boolean, Float, Integer, Locatable, Location};
 
 #[derive(Debug, PartialEq, Eq)]
+pub enum LogicalOperator {
+    And,
+    Or
+}
+
+impl<'a> From<Pair<'a, Rule>> for LogicalOperator {
+    fn from(pair: Pair<Rule>) -> Self {
+        match pair.as_rule() {
+            Rule::and => LogicalOperator::And,
+            Rule::or => LogicalOperator::Or,
+            _ => unreachable!("Invalid logical operator {:?}", pair),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
 pub enum BinaryOperator {
     Add,
     Subtract,
@@ -18,8 +34,6 @@ pub enum BinaryOperator {
     GreaterEqual,
     Less,
     LessEqual,
-    And,
-    Or,
 }
 
 impl<'a> From<Pair<'a, Rule>> for BinaryOperator {
@@ -33,8 +47,6 @@ impl<'a> From<Pair<'a, Rule>> for BinaryOperator {
             Rule::greater_equal => BinaryOperator::GreaterEqual,
             Rule::less => BinaryOperator::Less,
             Rule::less_equal => BinaryOperator::LessEqual,
-            Rule::and => BinaryOperator::And,
-            Rule::or => BinaryOperator::Or,
             _ => unreachable!("Invalid binary operator {:?}", pair),
         }
     }
@@ -71,13 +83,21 @@ impl Locatable for Expression {
 }
 
 lazy_static! {
-    static ref PREC_CLIMBER: PrecClimber<Rule> = {
+    static ref PREC_LOGICAL_CLIMBER: PrecClimber<Rule> = {
         use Assoc::*;
         use Rule::*;
 
         PrecClimber::new(vec![
             Operator::new(or, Left),
             Operator::new(and, Left),
+        ])
+    };
+
+    static ref PREC_BINARY_CLIMBER: PrecClimber<Rule> = {
+        use Assoc::*;
+        use Rule::*;
+
+        PrecClimber::new(vec![
             Operator::new(equal_equal, Left) | Operator::new(bang_equal, Left),
             Operator::new(greater, Left)
                 | Operator::new(greater_equal, Left)
@@ -91,6 +111,11 @@ lazy_static! {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Expr {
+    Logical {
+        operator: LogicalOperator,
+        left: Box<Expression>,
+        right: Box<Expression>,
+    },
     Binary {
         operator: BinaryOperator,
         left: Box<Expression>,
@@ -115,9 +140,29 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
                 Self::from(inner)
             }
 
+            Rule::logical => {
+                let inner = pair.into_inner();
+                PREC_LOGICAL_CLIMBER.climb(
+                    inner,
+                    Expression::from,
+                    |lhs: Expression, op: Pair<Rule>, rhs: Expression| {
+                        let location = Location::new(lhs.location.start(), rhs.location.end());
+
+                        Expression {
+                            expression: Expr::Logical {
+                                operator: LogicalOperator::from(op),
+                                left: Box::new(lhs),
+                                right: Box::new(rhs),
+                            },
+                            location,
+                        }
+                    },
+                )
+            }
+
             Rule::binary => {
                 let inner = pair.into_inner();
-                PREC_CLIMBER.climb(
+                PREC_BINARY_CLIMBER.climb(
                     inner,
                     Expression::from,
                     |lhs: Expression, op: Pair<Rule>, rhs: Expression| {
@@ -139,22 +184,23 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
                 let mut inner = pair.into_inner();
                 let next = inner.next().unwrap();
 
-                // TODO: Clean this up
-                if next.as_rule() == Rule::unary_operator {
-                    let start = next.as_span().start();
-                    let operator = UnaryOperator::from(next);
-                    let expression = Self::from(inner.next().unwrap());
-                    let location = Location::new(start, expression.location.end());
+                match next.as_rule() {
+                    Rule::unary_operator => {
+                        let start = next.as_span().start();
+                        let operator = UnaryOperator::from(next);
+                        let expression = Self::from(inner.next().unwrap());
 
-                    Expression {
-                        expression: Expr::Unary {
-                            operator,
-                            expression: Box::new(expression),
-                        },
-                        location,
+                        let location = Location::new(start, expression.location.end());
+
+                        Expression {
+                            expression: Expr::Unary {
+                                operator,
+                                expression: Box::new(expression),
+                            },
+                            location,
+                        }
                     }
-                } else {
-                    Self::from(next)
+                    _ => Self::from(next)
                 }
             }
             Rule::integer => {
@@ -410,8 +456,8 @@ mod tests {
         assert_eq!(
             expr,
             Expression {
-                expression: Expr::Binary {
-                    operator: BinaryOperator::And,
+                expression: Expr::Logical {
+                    operator: LogicalOperator::And,
                     left: Box::new(Expression {
                         expression: Expr::Boolean(Boolean {
                             value: false,
@@ -438,8 +484,8 @@ mod tests {
         assert_eq!(
             expr,
             Expression {
-                expression: Expr::Binary {
-                    operator: BinaryOperator::Or,
+                expression: Expr::Logical {
+                    operator: LogicalOperator::Or,
                     left: Box::new(Expression {
                         expression: Expr::Boolean(Boolean {
                             value: false,
@@ -466,11 +512,11 @@ mod tests {
         assert_eq!(
             expr,
             Expression {
-                expression: Expr::Binary {
-                    operator: BinaryOperator::Or,
+                expression: Expr::Logical {
+                    operator: LogicalOperator::Or,
                     left: Box::new(Expression {
-                        expression: Expr::Binary {
-                            operator: BinaryOperator::And,
+                        expression: Expr::Logical {
+                            operator: LogicalOperator::And,
                             left: Box::new(Expression {
                                 expression: Expr::Boolean(Boolean {
                                     value: true,
@@ -489,8 +535,8 @@ mod tests {
                         location: Location::new(0, 13)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Binary {
-                            operator: BinaryOperator::And,
+                        expression: Expr::Logical {
+                            operator: LogicalOperator::And,
                             left: Box::new(Expression {
                                 expression: Expr::Boolean(Boolean {
                                     value: true,
