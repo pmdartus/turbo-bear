@@ -1,7 +1,8 @@
 use pest::iterators::Pair;
 
-use super::{Locatable, Location};
 use crate::grammar::Rule;
+
+use super::{Locatable, Location};
 
 #[derive(Debug)]
 pub struct Float {

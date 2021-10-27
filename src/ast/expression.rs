@@ -1,9 +1,10 @@
 use pest::{
     iterators::Pair,
     prec_climber::{Assoc, Operator, PrecClimber},
+    Parser,
 };
 
-use crate::grammar::Rule;
+use crate::grammar::{Grammar, Rule};
 
 use super::{Boolean, Float, Integer, Locatable, Location};
 
@@ -59,7 +60,7 @@ impl<'a> From<Pair<'a, Rule>> for UnaryOperator {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Expression {
-    expression: Expr,
+    pub expression: Expr,
     location: Location,
 }
 
@@ -116,22 +117,22 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
 
             Rule::binary => {
                 let inner = pair.into_inner();
-                return PREC_CLIMBER.climb(
+                PREC_CLIMBER.climb(
                     inner,
-                    |pair: Pair<Rule>| Expression::from(pair),
+                    Expression::from,
                     |lhs: Expression, op: Pair<Rule>, rhs: Expression| {
                         let location = Location::new(lhs.location.start(), rhs.location.end());
 
-                        return Expression {
+                        Expression {
                             expression: Expr::Binary {
                                 operator: BinaryOperator::from(op),
                                 left: Box::new(lhs),
                                 right: Box::new(rhs),
                             },
                             location,
-                        };
+                        }
                     },
-                );
+                )
             }
 
             Rule::unary => {
@@ -182,20 +183,18 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
     }
 }
 
+pub fn parse_expression(input: &str) -> Expression {
+    let pair = Grammar::parse(Rule::whole_expression, input)
+        .unwrap()
+        .next()
+        .unwrap();
+
+    Expression::from(pair)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::grammar::{Grammar, Rule};
-    use pest::Parser;
-
-    fn parse_expression(input: &str) -> Expression {
-        let pair = Grammar::parse(Rule::whole_expression, input)
-            .unwrap()
-            .next()
-            .unwrap();
-
-        Expression::from(pair)
-    }
 
     #[test]
     fn parse_integer() {

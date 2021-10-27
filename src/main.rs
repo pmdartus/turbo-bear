@@ -7,16 +7,12 @@ extern crate lazy_static;
 
 mod ast;
 mod grammar;
+mod codegen;
 
-use pest::Parser;
-
-use grammar::{Grammar, Rule};
+use ast::parse_expression;
+use codegen::evaluate_expression;
 
 fn main() {
-    let res = Grammar::parse(Rule::boolean, "false");
-
-    for pair in res.unwrap() {
-        let node: ast::Boolean = pair.into();
-        println!("{:?}", node);
-    }
+    let expression = parse_expression("1 + 2 * 4");
+    evaluate_expression(expression);
 }

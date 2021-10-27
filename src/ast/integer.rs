@@ -1,7 +1,8 @@
 use pest::iterators::Pair;
 
 use crate::grammar::{Rule};
-use super::{Locatable, Location};
+
+use super::location::{Locatable, Location};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Integer {
