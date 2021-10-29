@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "mitsuhiko.insta",
+        "bungcip.better-toml",
+        "matklad.rust-analyzer"
+    ]
+}

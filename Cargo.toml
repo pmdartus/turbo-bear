@@ -8,3 +8,6 @@ inkwell = { git = "https://github.com/TheDan64/inkwell", branch = "master", feat
 lazy_static = "1.4"
 pest = "2.1"
 pest_derive = "2.1"
+
+[dev-dependencies]
+insta = { version = "1.8.0", features = ["glob"] }

@@ -1,6 +1,6 @@
 use pest::Parser;
 
-use crate::{ast::statement, grammar::{Grammar, Rule}};
+use crate::{grammar::{Grammar, Rule}};
 
 use super::{Locatable, Location, ParsingError, Statement};
 
@@ -46,4 +46,3 @@ pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
         })
     }
 }
-

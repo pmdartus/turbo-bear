@@ -9,6 +9,9 @@ mod ast;
 mod codegen;
 mod grammar;
 
+#[cfg(test)]
+mod test;
+
 use ast::{parse_expression, parse_program};
 use codegen::evaluate_expression;
 

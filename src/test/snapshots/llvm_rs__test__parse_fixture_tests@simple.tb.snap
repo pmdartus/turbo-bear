@@ -1,0 +1,72 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/simple.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "res",
+                        location: Location {
+                            start: 4,
+                            end: 7,
+                        },
+                    },
+                    init: Some(
+                        Expression {
+                            expr: Binary {
+                                operator: Add,
+                                left: Expression {
+                                    expr: Integer(
+                                        Integer {
+                                            value: 1,
+                                            location: Location {
+                                                start: 10,
+                                                end: 11,
+                                            },
+                                        },
+                                    ),
+                                    location: Location {
+                                        start: 10,
+                                        end: 11,
+                                    },
+                                },
+                                right: Expression {
+                                    expr: Integer(
+                                        Integer {
+                                            value: 2,
+                                            location: Location {
+                                                start: 14,
+                                                end: 15,
+                                            },
+                                        },
+                                    ),
+                                    location: Location {
+                                        start: 14,
+                                        end: 15,
+                                    },
+                                },
+                            },
+                            location: Location {
+                                start: 10,
+                                end: 15,
+                            },
+                        },
+                    ),
+                },
+                location: Location {
+                    start: 0,
+                    end: 16,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 16,
+        },
+    },
+)
