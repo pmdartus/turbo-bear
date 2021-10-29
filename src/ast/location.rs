@@ -4,8 +4,8 @@ use crate::grammar::Rule;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Location {
-    start: usize,
-    end: usize,
+    pub start: usize,
+    pub end: usize,
 }
 
 impl Location {

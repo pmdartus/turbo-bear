@@ -6,12 +6,12 @@ use pest::{
 
 use crate::grammar::{Grammar, Rule};
 
-use super::{Boolean, Float, Integer, Locatable, Location};
+use super::{Boolean, Float, Identifier, Integer, Locatable, Location, ParsingError};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum LogicalOperator {
     And,
-    Or
+    Or,
 }
 
 impl<'a> From<Pair<'a, Rule>> for LogicalOperator {
@@ -72,8 +72,8 @@ impl<'a> From<Pair<'a, Rule>> for UnaryOperator {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Expression {
-    pub expression: Expr,
-    location: Location,
+    pub expr: Expr,
+    pub location: Location,
 }
 
 impl Locatable for Expression {
@@ -87,12 +87,8 @@ lazy_static! {
         use Assoc::*;
         use Rule::*;
 
-        PrecClimber::new(vec![
-            Operator::new(or, Left),
-            Operator::new(and, Left),
-        ])
+        PrecClimber::new(vec![Operator::new(or, Left), Operator::new(and, Left)])
     };
-
     static ref PREC_BINARY_CLIMBER: PrecClimber<Rule> = {
         use Assoc::*;
         use Rule::*;
@@ -125,37 +121,42 @@ pub enum Expr {
         operator: UnaryOperator,
         expression: Box<Expression>,
     },
+    Identifier(Identifier),
     Integer(Integer),
     Float(Float),
     Boolean(Boolean),
 }
 
-impl<'a> From<Pair<'a, Rule>> for Expression {
-    fn from(pair: Pair<Rule>) -> Self {
+impl<'a> TryFrom<Pair<'a, Rule>> for Expression {
+    type Error = ParsingError;
+
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         let location = Location::from(&pair);
 
         match pair.as_rule() {
             Rule::expression => {
                 let inner = pair.into_inner().next().unwrap();
-                Self::from(inner)
+                Self::try_from(inner)
             }
 
             Rule::logical => {
                 let inner = pair.into_inner();
                 PREC_LOGICAL_CLIMBER.climb(
                     inner,
-                    Expression::from,
-                    |lhs: Expression, op: Pair<Rule>, rhs: Expression| {
-                        let location = Location::new(lhs.location.start(), rhs.location.end());
+                    Expression::try_from,
+                    |lhs_res: Result<Expression, ParsingError>, op: Pair<Rule>, rhs_res: Result<Expression, ParsingError>| {
+                        let lhs = lhs_res?;
+                        let rhs = rhs_res?;
 
-                        Expression {
-                            expression: Expr::Logical {
+                        let location = Location::new(lhs.location.start(), rhs.location.end());
+                        Ok(Expression {
+                            expr: Expr::Logical {
                                 operator: LogicalOperator::from(op),
                                 left: Box::new(lhs),
                                 right: Box::new(rhs),
                             },
                             location,
-                        }
+                        })
                     },
                 )
             }
@@ -164,18 +165,20 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
                 let inner = pair.into_inner();
                 PREC_BINARY_CLIMBER.climb(
                     inner,
-                    Expression::from,
-                    |lhs: Expression, op: Pair<Rule>, rhs: Expression| {
-                        let location = Location::new(lhs.location.start(), rhs.location.end());
+                    Expression::try_from,
+                    |lhs_res: Result<Expression, ParsingError>, op: Pair<Rule>, rhs_res: Result<Expression, ParsingError>| {
+                        let lhs = lhs_res?;
+                        let rhs = rhs_res?;
 
-                        Expression {
-                            expression: Expr::Binary {
+                        let location = Location::new(lhs.location.start(), rhs.location.end());
+                        Ok(Expression {
+                            expr: Expr::Binary {
                                 operator: BinaryOperator::from(op),
                                 left: Box::new(lhs),
                                 right: Box::new(rhs),
                             },
                             location,
-                        }
+                        })
                     },
                 )
             }
@@ -188,54 +191,62 @@ impl<'a> From<Pair<'a, Rule>> for Expression {
                     Rule::unary_operator => {
                         let start = next.as_span().start();
                         let operator = UnaryOperator::from(next);
-                        let expression = Self::from(inner.next().unwrap());
+                        let expression = Self::try_from(inner.next().unwrap())?;
 
                         let location = Location::new(start, expression.location.end());
 
-                        Expression {
-                            expression: Expr::Unary {
+                        Ok(Expression {
+                            expr: Expr::Unary {
                                 operator,
                                 expression: Box::new(expression),
                             },
                             location,
-                        }
+                        })
                     }
-                    _ => Self::from(next)
+                    _ => Self::try_from(next),
                 }
+            }
+
+            Rule::identifier => {
+                let ident = Identifier::try_from(pair)?;
+                Ok(Expression {
+                    expr: Expr::Identifier(ident),
+                    location,
+                })
             }
             Rule::integer => {
                 let int = Integer::from(pair);
-                Expression {
-                    expression: Expr::Integer(int),
+                Ok(Expression {
+                    expr: Expr::Integer(int),
                     location,
-                }
+                })
             }
             Rule::float => {
                 let float = Float::from(pair);
-                Expression {
-                    expression: Expr::Float(float),
+                Ok(Expression {
+                    expr: Expr::Float(float),
                     location,
-                }
+                })
             }
             Rule::boolean => {
                 let bool = Boolean::from(pair);
-                Expression {
-                    expression: Expr::Boolean(bool),
+                Ok(Expression {
+                    expr: Expr::Boolean(bool),
                     location,
-                }
+                })
             }
             _ => unreachable!("Unexpected expression {:?}", pair),
         }
     }
 }
 
-pub fn parse_expression(input: &str) -> Expression {
+pub fn parse_expression(input: &str) -> Result<Expression, ParsingError> {
     let pair = Grammar::parse(Rule::whole_expression, input)
         .unwrap()
         .next()
         .unwrap();
 
-    Expression::from(pair)
+    Expression::try_from(pair)
 }
 
 #[cfg(test)]
@@ -247,13 +258,13 @@ mod tests {
         let expr = parse_expression("1");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Integer(Integer {
+            Ok(Expression {
+                expr: Expr::Integer(Integer {
                     value: 1,
                     location: Location::new(0, 1)
                 }),
                 location: Location::new(0, 1)
-            }
+            })
         )
     }
 
@@ -262,13 +273,13 @@ mod tests {
         let expr = parse_expression("1.2");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Float(Float {
+            Ok(Expression {
+                expr: Expr::Float(Float {
                     value: 1.2,
                     location: Location::new(0, 3)
                 }),
                 location: Location::new(0, 3)
-            }
+            })
         )
     }
 
@@ -277,13 +288,13 @@ mod tests {
         let expr = parse_expression("true");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Boolean(Boolean {
+            Ok(Expression {
+                expr: Expr::Boolean(Boolean {
                     value: true,
                     location: Location::new(0, 4)
                 }),
                 location: Location::new(0, 4)
-            }
+            })
         )
     }
 
@@ -292,11 +303,11 @@ mod tests {
         let expr = parse_expression("!false");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Unary {
+            Ok(Expression {
+                expr: Expr::Unary {
                     operator: UnaryOperator::Not,
                     expression: Box::new(Expression {
-                        expression: Expr::Boolean(Boolean {
+                        expr: Expr::Boolean(Boolean {
                             value: false,
                             location: Location::new(1, 6)
                         }),
@@ -304,7 +315,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 6)
-            }
+            })
         )
     }
 
@@ -313,14 +324,14 @@ mod tests {
         let expr = parse_expression("!!false");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Unary {
+            Ok(Expression {
+                expr: Expr::Unary {
                     operator: UnaryOperator::Not,
                     expression: Box::new(Expression {
-                        expression: Expr::Unary {
+                        expr: Expr::Unary {
                             operator: UnaryOperator::Not,
                             expression: Box::new(Expression {
-                                expression: Expr::Boolean(Boolean {
+                                expr: Expr::Boolean(Boolean {
                                     value: false,
                                     location: Location::new(2, 7)
                                 }),
@@ -331,7 +342,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 7)
-            }
+            })
         )
     }
 
@@ -340,18 +351,18 @@ mod tests {
         let expr = parse_expression("1 + 2");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Binary {
+            Ok(Expression {
+                expr: Expr::Binary {
                     operator: BinaryOperator::Add,
                     left: Box::new(Expression {
-                        expression: Expr::Integer(Integer {
+                        expr: Expr::Integer(Integer {
                             value: 1,
                             location: Location::new(0, 1)
                         }),
                         location: Location::new(0, 1)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Integer(Integer {
+                        expr: Expr::Integer(Integer {
                             value: 2,
                             location: Location::new(4, 5)
                         }),
@@ -359,7 +370,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 5)
-            }
+            })
         )
     }
 
@@ -368,21 +379,21 @@ mod tests {
         let expr = parse_expression("2 * 3 + 4");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Binary {
+            Ok(Expression {
+                expr: Expr::Binary {
                     operator: BinaryOperator::Add,
                     left: Box::new(Expression {
-                        expression: Expr::Binary {
+                        expr: Expr::Binary {
                             operator: BinaryOperator::Multiply,
                             left: Box::new(Expression {
-                                expression: Expr::Integer(Integer {
+                                expr: Expr::Integer(Integer {
                                     value: 2,
                                     location: Location::new(0, 1)
                                 }),
                                 location: Location::new(0, 1)
                             }),
                             right: Box::new(Expression {
-                                expression: Expr::Integer(Integer {
+                                expr: Expr::Integer(Integer {
                                     value: 3,
                                     location: Location::new(4, 5)
                                 }),
@@ -392,7 +403,7 @@ mod tests {
                         location: Location::new(0, 5)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Integer(Integer {
+                        expr: Expr::Integer(Integer {
                             value: 4,
                             location: Location::new(8, 9)
                         }),
@@ -400,7 +411,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 9)
-            }
+            })
         )
     }
 
@@ -409,28 +420,28 @@ mod tests {
         let expr = parse_expression("2 * (3 + 4)");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Binary {
+            Ok(Expression {
+                expr: Expr::Binary {
                     operator: BinaryOperator::Multiply,
                     left: Box::new(Expression {
-                        expression: Expr::Integer(Integer {
+                        expr: Expr::Integer(Integer {
                             value: 2,
                             location: Location::new(0, 1)
                         }),
                         location: Location::new(0, 1)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Binary {
+                        expr: Expr::Binary {
                             operator: BinaryOperator::Add,
                             left: Box::new(Expression {
-                                expression: Expr::Integer(Integer {
+                                expr: Expr::Integer(Integer {
                                     value: 3,
                                     location: Location::new(5, 6)
                                 }),
                                 location: Location::new(5, 6)
                             }),
                             right: Box::new(Expression {
-                                expression: Expr::Integer(Integer {
+                                expr: Expr::Integer(Integer {
                                     value: 4,
                                     location: Location::new(9, 10)
                                 }),
@@ -441,7 +452,7 @@ mod tests {
                     }),
                 },
                 location: Location::new(0, 10)
-            }
+            })
         )
     }
 
@@ -455,18 +466,18 @@ mod tests {
         let expr = parse_expression("false && true");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Logical {
+            Ok(Expression {
+                expr: Expr::Logical {
                     operator: LogicalOperator::And,
                     left: Box::new(Expression {
-                        expression: Expr::Boolean(Boolean {
+                        expr: Expr::Boolean(Boolean {
                             value: false,
                             location: Location::new(0, 5)
                         }),
                         location: Location::new(0, 5)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Boolean(Boolean {
+                        expr: Expr::Boolean(Boolean {
                             value: true,
                             location: Location::new(9, 13)
                         }),
@@ -474,7 +485,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 13)
-            }
+            })
         )
     }
 
@@ -483,18 +494,18 @@ mod tests {
         let expr = parse_expression("false || true");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Logical {
+            Ok(Expression {
+                expr: Expr::Logical {
                     operator: LogicalOperator::Or,
                     left: Box::new(Expression {
-                        expression: Expr::Boolean(Boolean {
+                        expr: Expr::Boolean(Boolean {
                             value: false,
                             location: Location::new(0, 5)
                         }),
                         location: Location::new(0, 5)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Boolean(Boolean {
+                        expr: Expr::Boolean(Boolean {
                             value: true,
                             location: Location::new(9, 13)
                         }),
@@ -502,7 +513,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 13)
-            }
+            })
         )
     }
 
@@ -511,21 +522,21 @@ mod tests {
         let expr = parse_expression("true && false || true && false");
         assert_eq!(
             expr,
-            Expression {
-                expression: Expr::Logical {
+            Ok(Expression {
+                expr: Expr::Logical {
                     operator: LogicalOperator::Or,
                     left: Box::new(Expression {
-                        expression: Expr::Logical {
+                        expr: Expr::Logical {
                             operator: LogicalOperator::And,
                             left: Box::new(Expression {
-                                expression: Expr::Boolean(Boolean {
+                                expr: Expr::Boolean(Boolean {
                                     value: true,
                                     location: Location::new(0, 4)
                                 }),
                                 location: Location::new(0, 4)
                             }),
                             right: Box::new(Expression {
-                                expression: Expr::Boolean(Boolean {
+                                expr: Expr::Boolean(Boolean {
                                     value: false,
                                     location: Location::new(8, 13)
                                 }),
@@ -535,17 +546,17 @@ mod tests {
                         location: Location::new(0, 13)
                     }),
                     right: Box::new(Expression {
-                        expression: Expr::Logical {
+                        expr: Expr::Logical {
                             operator: LogicalOperator::And,
                             left: Box::new(Expression {
-                                expression: Expr::Boolean(Boolean {
+                                expr: Expr::Boolean(Boolean {
                                     value: true,
                                     location: Location::new(17, 21)
                                 }),
                                 location: Location::new(17, 21)
                             }),
                             right: Box::new(Expression {
-                                expression: Expr::Boolean(Boolean {
+                                expr: Expr::Boolean(Boolean {
                                     value: false,
                                     location: Location::new(25, 30)
                                 }),
@@ -556,7 +567,7 @@ mod tests {
                     })
                 },
                 location: Location::new(0, 30)
-            }
+            })
         )
     }
 }

@@ -6,13 +6,14 @@ extern crate pest;
 extern crate lazy_static;
 
 mod ast;
-mod grammar;
 mod codegen;
+mod grammar;
 
-use ast::parse_expression;
+use ast::{parse_expression, parse_program};
 use codegen::evaluate_expression;
 
 fn main() {
-    let expression = parse_expression("1 + 2 * 4");
-    evaluate_expression(expression);
+    let program = parse_program("let a = 1 + 2 * 4;").unwrap();
+    println!("{:#?}", program);
+    // evaluate_expression(program);
 }

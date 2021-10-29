@@ -55,7 +55,7 @@ impl<'ctx> CodeGen<'ctx> {
     }
 
     fn build_expression(&self, expression: &Expression) -> IntValue {
-        match &expression.expression {
+        match &expression.expr {
             crate::ast::Expr::Logical { .. } => todo!(),
 
             crate::ast::Expr::Binary { operator, left, right } => {
@@ -87,6 +87,7 @@ impl<'ctx> CodeGen<'ctx> {
             },
             crate::ast::Expr::Float(_) => todo!(),
             crate::ast::Expr::Boolean(_) => todo!(),
+            crate::ast::Expr::Identifier(_) => todo!(),
         }
     }
 
