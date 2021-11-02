@@ -1,0 +1,124 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/return.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: FunctionDeclaration {
+                    identifier: Identifier {
+                        name: "empty",
+                        location: Location {
+                            start: 3,
+                            end: 8,
+                        },
+                    },
+                    parameters: [],
+                    return_ty: Identifier {
+                        name: "int",
+                        location: Location {
+                            start: 14,
+                            end: 17,
+                        },
+                    },
+                    body: [
+                        Statement {
+                            stmt: Return {
+                                expression: None,
+                            },
+                            location: Location {
+                                start: 24,
+                                end: 31,
+                            },
+                        },
+                    ],
+                },
+                location: Location {
+                    start: 0,
+                    end: 33,
+                },
+            },
+            Statement {
+                stmt: FunctionDeclaration {
+                    identifier: Identifier {
+                        name: "with_expression",
+                        location: Location {
+                            start: 38,
+                            end: 53,
+                        },
+                    },
+                    parameters: [],
+                    return_ty: Identifier {
+                        name: "int",
+                        location: Location {
+                            start: 59,
+                            end: 62,
+                        },
+                    },
+                    body: [
+                        Statement {
+                            stmt: Return {
+                                expression: Some(
+                                    Expression {
+                                        expr: Binary {
+                                            operator: Add,
+                                            left: Expression {
+                                                expr: Integer(
+                                                    Integer {
+                                                        value: 1,
+                                                        location: Location {
+                                                            start: 76,
+                                                            end: 77,
+                                                        },
+                                                    },
+                                                ),
+                                                location: Location {
+                                                    start: 76,
+                                                    end: 77,
+                                                },
+                                            },
+                                            right: Expression {
+                                                expr: Integer(
+                                                    Integer {
+                                                        value: 2,
+                                                        location: Location {
+                                                            start: 80,
+                                                            end: 81,
+                                                        },
+                                                    },
+                                                ),
+                                                location: Location {
+                                                    start: 80,
+                                                    end: 81,
+                                                },
+                                            },
+                                        },
+                                        location: Location {
+                                            start: 76,
+                                            end: 81,
+                                        },
+                                    },
+                                ),
+                            },
+                            location: Location {
+                                start: 69,
+                                end: 82,
+                            },
+                        },
+                    ],
+                },
+                location: Location {
+                    start: 35,
+                    end: 84,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 84,
+        },
+    },
+)

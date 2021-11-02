@@ -2,12 +2,20 @@
 // https://docs.rs/pest_derive/2.1.0/pest_derive/
 // https://pest.rs/book/grammars/syntax.html
 
-program = _{ SOI ~ declaration* ~ EOI }
-whole_expression = _{ SOI ~ expression ~ EOI }
+program = _{ SOI ~ statement* ~ EOI }
 
-declaration = _{ variable_declaration }
+statement = _{ variable_declaration | function_declaration | return_statement | block | expression_statement }
 
-variable_declaration = { "let" ~ identifier ~ ("=" ~ expression)? ~ ";" }
+block = { "{" ~ statement* ~ "}" }
+
+variable_declaration = { "let" ~ identifier ~ (":" ~ ty)? ~ ("=" ~ expression)? ~ ";" }
+
+function_declaration = { "fn" ~ identifier ~ function_params ~ "->" ~ ty ~ block }
+function_params = {  "(" ~ (identifier ~ ":" ~ ty ~ ("," ~ identifier ~ ":" ~ ty)*)? ~ ")" }
+
+expression_statement = { expression ~ ";" }
+
+return_statement = { "return" ~ expression? ~ ";" }
 
 plus            = { "+" }
 minus           = { "-" }
@@ -37,6 +45,8 @@ expression = { logical | binary | unary }
 
 identifier = ${ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
+ty = { identifier }
+
 float = ${ float_characteristic ~ "." ~ float_mantissa }
     float_characteristic = { "0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT* }
     float_mantissa = { ASCII_DIGIT+ }
@@ -45,4 +55,4 @@ integer = ${ "0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT* }
 
 boolean = { "true" | "false" }
 
-WHITESPACE = _{ " " | "\t" }
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }

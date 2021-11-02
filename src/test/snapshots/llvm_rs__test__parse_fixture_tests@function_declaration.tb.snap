@@ -1,0 +1,138 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/function_declaration.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: FunctionDeclaration {
+                    identifier: Identifier {
+                        name: "main",
+                        location: Location {
+                            start: 3,
+                            end: 7,
+                        },
+                    },
+                    parameters: [],
+                    return_ty: Identifier {
+                        name: "int",
+                        location: Location {
+                            start: 13,
+                            end: 16,
+                        },
+                    },
+                    body: [],
+                },
+                location: Location {
+                    start: 0,
+                    end: 19,
+                },
+            },
+            Statement {
+                stmt: FunctionDeclaration {
+                    identifier: Identifier {
+                        name: "single",
+                        location: Location {
+                            start: 23,
+                            end: 29,
+                        },
+                    },
+                    parameters: [
+                        (
+                            Identifier {
+                                name: "a",
+                                location: Location {
+                                    start: 30,
+                                    end: 31,
+                                },
+                            },
+                            Identifier {
+                                name: "int",
+                                location: Location {
+                                    start: 33,
+                                    end: 36,
+                                },
+                            },
+                        ),
+                    ],
+                    return_ty: Identifier {
+                        name: "int",
+                        location: Location {
+                            start: 41,
+                            end: 44,
+                        },
+                    },
+                    body: [],
+                },
+                location: Location {
+                    start: 20,
+                    end: 47,
+                },
+            },
+            Statement {
+                stmt: FunctionDeclaration {
+                    identifier: Identifier {
+                        name: "double",
+                        location: Location {
+                            start: 51,
+                            end: 57,
+                        },
+                    },
+                    parameters: [
+                        (
+                            Identifier {
+                                name: "a",
+                                location: Location {
+                                    start: 58,
+                                    end: 59,
+                                },
+                            },
+                            Identifier {
+                                name: "int",
+                                location: Location {
+                                    start: 61,
+                                    end: 64,
+                                },
+                            },
+                        ),
+                        (
+                            Identifier {
+                                name: "b",
+                                location: Location {
+                                    start: 66,
+                                    end: 67,
+                                },
+                            },
+                            Identifier {
+                                name: "int",
+                                location: Location {
+                                    start: 69,
+                                    end: 72,
+                                },
+                            },
+                        ),
+                    ],
+                    return_ty: Identifier {
+                        name: "int",
+                        location: Location {
+                            start: 77,
+                            end: 80,
+                        },
+                    },
+                    body: [],
+                },
+                location: Location {
+                    start: 48,
+                    end: 83,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 83,
+        },
+    },
+)

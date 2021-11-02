@@ -1,0 +1,580 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/expression.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Unary {
+                            operator: Not,
+                            expression: Expression {
+                                expr: Boolean(
+                                    Boolean {
+                                        value: true,
+                                        location: Location {
+                                            start: 1,
+                                            end: 5,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 1,
+                                    end: 5,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 0,
+                            end: 5,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 0,
+                    end: 6,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Unary {
+                            operator: Not,
+                            expression: Expression {
+                                expr: Unary {
+                                    operator: Not,
+                                    expression: Expression {
+                                        expr: Boolean(
+                                            Boolean {
+                                                value: true,
+                                                location: Location {
+                                                    start: 9,
+                                                    end: 13,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 9,
+                                            end: 13,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 8,
+                                    end: 13,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 7,
+                            end: 13,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 7,
+                    end: 14,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Binary {
+                            operator: Add,
+                            left: Expression {
+                                expr: Integer(
+                                    Integer {
+                                        value: 1,
+                                        location: Location {
+                                            start: 16,
+                                            end: 17,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 16,
+                                    end: 17,
+                                },
+                            },
+                            right: Expression {
+                                expr: Integer(
+                                    Integer {
+                                        value: 2,
+                                        location: Location {
+                                            start: 20,
+                                            end: 21,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 20,
+                                    end: 21,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 16,
+                            end: 21,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 16,
+                    end: 22,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Binary {
+                            operator: Add,
+                            left: Expression {
+                                expr: Binary {
+                                    operator: Multiply,
+                                    left: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 2,
+                                                location: Location {
+                                                    start: 23,
+                                                    end: 24,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 23,
+                                            end: 24,
+                                        },
+                                    },
+                                    right: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 3,
+                                                location: Location {
+                                                    start: 27,
+                                                    end: 28,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 27,
+                                            end: 28,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 23,
+                                    end: 28,
+                                },
+                            },
+                            right: Expression {
+                                expr: Integer(
+                                    Integer {
+                                        value: 4,
+                                        location: Location {
+                                            start: 31,
+                                            end: 32,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 31,
+                                    end: 32,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 23,
+                            end: 32,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 23,
+                    end: 33,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Binary {
+                            operator: Multiply,
+                            left: Expression {
+                                expr: Integer(
+                                    Integer {
+                                        value: 2,
+                                        location: Location {
+                                            start: 34,
+                                            end: 35,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 34,
+                                    end: 35,
+                                },
+                            },
+                            right: Expression {
+                                expr: Binary {
+                                    operator: Add,
+                                    left: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 3,
+                                                location: Location {
+                                                    start: 39,
+                                                    end: 40,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 39,
+                                            end: 40,
+                                        },
+                                    },
+                                    right: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 4,
+                                                location: Location {
+                                                    start: 43,
+                                                    end: 44,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 43,
+                                            end: 44,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 39,
+                                    end: 44,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 34,
+                            end: 44,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 34,
+                    end: 46,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Binary {
+                            operator: Subtract,
+                            left: Expression {
+                                expr: Binary {
+                                    operator: Multiply,
+                                    left: Expression {
+                                        expr: Binary {
+                                            operator: Add,
+                                            left: Expression {
+                                                expr: Unary {
+                                                    operator: Minus,
+                                                    expression: Expression {
+                                                        expr: Integer(
+                                                            Integer {
+                                                                value: 1,
+                                                                location: Location {
+                                                                    start: 49,
+                                                                    end: 50,
+                                                                },
+                                                            },
+                                                        ),
+                                                        location: Location {
+                                                            start: 49,
+                                                            end: 50,
+                                                        },
+                                                    },
+                                                },
+                                                location: Location {
+                                                    start: 48,
+                                                    end: 50,
+                                                },
+                                            },
+                                            right: Expression {
+                                                expr: Integer(
+                                                    Integer {
+                                                        value: 2,
+                                                        location: Location {
+                                                            start: 53,
+                                                            end: 54,
+                                                        },
+                                                    },
+                                                ),
+                                                location: Location {
+                                                    start: 53,
+                                                    end: 54,
+                                                },
+                                            },
+                                        },
+                                        location: Location {
+                                            start: 48,
+                                            end: 54,
+                                        },
+                                    },
+                                    right: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 3,
+                                                location: Location {
+                                                    start: 58,
+                                                    end: 59,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 58,
+                                            end: 59,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 48,
+                                    end: 59,
+                                },
+                            },
+                            right: Expression {
+                                expr: Unary {
+                                    operator: Minus,
+                                    expression: Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 4,
+                                                location: Location {
+                                                    start: 63,
+                                                    end: 64,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 63,
+                                            end: 64,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 62,
+                                    end: 64,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 48,
+                            end: 64,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 47,
+                    end: 65,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Logical {
+                            operator: And,
+                            left: Expression {
+                                expr: Boolean(
+                                    Boolean {
+                                        value: false,
+                                        location: Location {
+                                            start: 67,
+                                            end: 72,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 67,
+                                    end: 72,
+                                },
+                            },
+                            right: Expression {
+                                expr: Boolean(
+                                    Boolean {
+                                        value: true,
+                                        location: Location {
+                                            start: 76,
+                                            end: 80,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 76,
+                                    end: 80,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 67,
+                            end: 80,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 67,
+                    end: 81,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Logical {
+                            operator: Or,
+                            left: Expression {
+                                expr: Boolean(
+                                    Boolean {
+                                        value: false,
+                                        location: Location {
+                                            start: 82,
+                                            end: 87,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 82,
+                                    end: 87,
+                                },
+                            },
+                            right: Expression {
+                                expr: Boolean(
+                                    Boolean {
+                                        value: true,
+                                        location: Location {
+                                            start: 91,
+                                            end: 95,
+                                        },
+                                    },
+                                ),
+                                location: Location {
+                                    start: 91,
+                                    end: 95,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 82,
+                            end: 95,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 82,
+                    end: 96,
+                },
+            },
+            Statement {
+                stmt: Expression {
+                    expression: Expression {
+                        expr: Logical {
+                            operator: Or,
+                            left: Expression {
+                                expr: Logical {
+                                    operator: And,
+                                    left: Expression {
+                                        expr: Boolean(
+                                            Boolean {
+                                                value: true,
+                                                location: Location {
+                                                    start: 97,
+                                                    end: 101,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 97,
+                                            end: 101,
+                                        },
+                                    },
+                                    right: Expression {
+                                        expr: Boolean(
+                                            Boolean {
+                                                value: false,
+                                                location: Location {
+                                                    start: 105,
+                                                    end: 110,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 105,
+                                            end: 110,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 97,
+                                    end: 110,
+                                },
+                            },
+                            right: Expression {
+                                expr: Logical {
+                                    operator: And,
+                                    left: Expression {
+                                        expr: Boolean(
+                                            Boolean {
+                                                value: true,
+                                                location: Location {
+                                                    start: 114,
+                                                    end: 118,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 114,
+                                            end: 118,
+                                        },
+                                    },
+                                    right: Expression {
+                                        expr: Boolean(
+                                            Boolean {
+                                                value: false,
+                                                location: Location {
+                                                    start: 122,
+                                                    end: 127,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 122,
+                                            end: 127,
+                                        },
+                                    },
+                                },
+                                location: Location {
+                                    start: 114,
+                                    end: 127,
+                                },
+                            },
+                        },
+                        location: Location {
+                            start: 97,
+                            end: 127,
+                        },
+                    },
+                },
+                location: Location {
+                    start: 97,
+                    end: 128,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 128,
+        },
+    },
+)

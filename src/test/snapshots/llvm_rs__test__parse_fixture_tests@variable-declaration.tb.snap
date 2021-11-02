@@ -1,0 +1,132 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/variable-declaration.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "a",
+                        location: Location {
+                            start: 4,
+                            end: 5,
+                        },
+                    },
+                    ty: None,
+                    init: None,
+                },
+                location: Location {
+                    start: 0,
+                    end: 6,
+                },
+            },
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "b",
+                        location: Location {
+                            start: 11,
+                            end: 12,
+                        },
+                    },
+                    ty: None,
+                    init: Some(
+                        Expression {
+                            expr: Integer(
+                                Integer {
+                                    value: 1,
+                                    location: Location {
+                                        start: 15,
+                                        end: 16,
+                                    },
+                                },
+                            ),
+                            location: Location {
+                                start: 15,
+                                end: 16,
+                            },
+                        },
+                    ),
+                },
+                location: Location {
+                    start: 7,
+                    end: 17,
+                },
+            },
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "c",
+                        location: Location {
+                            start: 22,
+                            end: 23,
+                        },
+                    },
+                    ty: Some(
+                        Identifier {
+                            name: "int",
+                            location: Location {
+                                start: 25,
+                                end: 28,
+                            },
+                        },
+                    ),
+                    init: None,
+                },
+                location: Location {
+                    start: 18,
+                    end: 29,
+                },
+            },
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "d",
+                        location: Location {
+                            start: 34,
+                            end: 35,
+                        },
+                    },
+                    ty: Some(
+                        Identifier {
+                            name: "int",
+                            location: Location {
+                                start: 37,
+                                end: 40,
+                            },
+                        },
+                    ),
+                    init: Some(
+                        Expression {
+                            expr: Integer(
+                                Integer {
+                                    value: 1,
+                                    location: Location {
+                                        start: 43,
+                                        end: 44,
+                                    },
+                                },
+                            ),
+                            location: Location {
+                                start: 43,
+                                end: 44,
+                            },
+                        },
+                    ),
+                },
+                location: Location {
+                    start: 30,
+                    end: 45,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 45,
+        },
+    },
+)

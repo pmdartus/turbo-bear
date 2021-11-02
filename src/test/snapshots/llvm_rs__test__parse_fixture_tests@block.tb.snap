@@ -1,0 +1,135 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/block.tb
+
+---
+Ok(
+    Program {
+        statements: [
+            Statement {
+                stmt: VariableDeclaration {
+                    identifier: Identifier {
+                        name: "a",
+                        location: Location {
+                            start: 4,
+                            end: 5,
+                        },
+                    },
+                    ty: None,
+                    init: Some(
+                        Expression {
+                            expr: Integer(
+                                Integer {
+                                    value: 1,
+                                    location: Location {
+                                        start: 8,
+                                        end: 9,
+                                    },
+                                },
+                            ),
+                            location: Location {
+                                start: 8,
+                                end: 9,
+                            },
+                        },
+                    ),
+                },
+                location: Location {
+                    start: 0,
+                    end: 10,
+                },
+            },
+            Statement {
+                stmt: Block {
+                    statements: [
+                        Statement {
+                            stmt: VariableDeclaration {
+                                identifier: Identifier {
+                                    name: "b",
+                                    location: Location {
+                                        start: 22,
+                                        end: 23,
+                                    },
+                                },
+                                ty: None,
+                                init: Some(
+                                    Expression {
+                                        expr: Integer(
+                                            Integer {
+                                                value: 2,
+                                                location: Location {
+                                                    start: 26,
+                                                    end: 27,
+                                                },
+                                            },
+                                        ),
+                                        location: Location {
+                                            start: 26,
+                                            end: 27,
+                                        },
+                                    },
+                                ),
+                            },
+                            location: Location {
+                                start: 18,
+                                end: 28,
+                            },
+                        },
+                        Statement {
+                            stmt: Block {
+                                statements: [
+                                    Statement {
+                                        stmt: VariableDeclaration {
+                                            identifier: Identifier {
+                                                name: "a",
+                                                location: Location {
+                                                    start: 52,
+                                                    end: 53,
+                                                },
+                                            },
+                                            ty: None,
+                                            init: Some(
+                                                Expression {
+                                                    expr: Integer(
+                                                        Integer {
+                                                            value: 4,
+                                                            location: Location {
+                                                                start: 56,
+                                                                end: 57,
+                                                            },
+                                                        },
+                                                    ),
+                                                    location: Location {
+                                                        start: 56,
+                                                        end: 57,
+                                                    },
+                                                },
+                                            ),
+                                        },
+                                        location: Location {
+                                            start: 48,
+                                            end: 58,
+                                        },
+                                    },
+                                ],
+                            },
+                            location: Location {
+                                start: 38,
+                                end: 64,
+                            },
+                        },
+                    ],
+                },
+                location: Location {
+                    start: 12,
+                    end: 66,
+                },
+            },
+        ],
+        location: Location {
+            start: 0,
+            end: 66,
+        },
+    },
+)

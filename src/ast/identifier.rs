@@ -34,7 +34,10 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Identifier {
                     Ok(Identifier { name, location })
                 }
             }
-            _ => unreachable!("Unexpected float value {:?}", value),
+            Rule::ty => {
+                Self::try_from(value.into_inner().next().unwrap())
+            }
+            _ => unreachable!("Unexpected identifier value {:?}", value),
         }
     }
 }

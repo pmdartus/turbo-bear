@@ -1,0 +1,7 @@
+fn empty() -> int {
+    return;
+}
+
+fn with_expression() -> int {
+    return 1 + 2;
+}

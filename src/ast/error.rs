@@ -14,3 +14,11 @@ impl fmt::Display for ParsingError {
         }
     }
 }
+
+pub type ParsingErrors = Vec<ParsingError>;
+
+impl From<ParsingError> for ParsingErrors {
+    fn from(error: ParsingError) -> Self {
+        vec![error]
+    }
+}

@@ -1,0 +1,3 @@
+fn main() -> int {}
+fn single(a: int) -> int {}
+fn double(a: int, b: int) -> int {}

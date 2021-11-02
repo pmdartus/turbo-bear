@@ -9,8 +9,8 @@ mod program;
 mod statement;
 
 pub use boolean::Boolean;
-pub use error::ParsingError;
-pub use expression::{parse_expression, BinaryOperator, Expr, Expression, UnaryOperator};
+pub use error::{ParsingError, ParsingErrors};
+pub use expression::{BinaryOperator, Expr, Expression, UnaryOperator};
 pub use float::Float;
 pub use identifier::Identifier;
 pub use integer::Integer;

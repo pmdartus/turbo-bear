@@ -1,0 +1,15 @@
+---
+source: src/test/mod.rs
+expression: program
+input_file: src/test/fixtures/empty.tb
+
+---
+Ok(
+    Program {
+        statements: [],
+        location: Location {
+            start: 0,
+            end: 0,
+        },
+    },
+)

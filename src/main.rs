@@ -12,7 +12,7 @@ mod grammar;
 #[cfg(test)]
 mod test;
 
-use ast::{parse_expression, parse_program};
+use ast::{parse_program};
 use codegen::evaluate_expression;
 
 fn main() {

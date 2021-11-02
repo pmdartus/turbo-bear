@@ -2,7 +2,7 @@ use pest::Parser;
 
 use crate::{grammar::{Grammar, Rule}};
 
-use super::{Locatable, Location, ParsingError, Statement};
+use super::{Locatable, Location, ParsingErrors, Statement};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Program {
@@ -16,7 +16,7 @@ impl Locatable for Program {
     }
 }
 
-pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
+pub fn parse_program(input: &str) -> Result<Program, ParsingErrors> {
     let mut pairs = Grammar::parse(Rule::program, input).unwrap();
     
     let start = 0;
@@ -32,7 +32,7 @@ pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
             },
             _ => match Statement::try_from(pair) {
                 Ok(stmt) => statements.push(stmt),
-                Err(err) => errors.push(err)
+                Err(mut err) => errors.append(&mut err)
             }
         };
     }
