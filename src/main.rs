@@ -6,13 +6,13 @@ extern crate pest;
 extern crate lazy_static;
 
 mod ast;
+mod parser;
 mod codegen;
-mod grammar;
 
 #[cfg(test)]
 mod test;
 
-use ast::{parse_program};
+use parser::{parse_program};
 use codegen::evaluate_expression;
 
 fn main() {

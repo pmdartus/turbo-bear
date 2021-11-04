@@ -1,3 +1,3 @@
 #[derive(Parser)]
-#[grammar = "grammar.pest"]
+#[grammar = "./parser/grammar.pest"]
 pub struct Grammar;

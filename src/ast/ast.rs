@@ -1,4 +1,4 @@
-use super::Location;
+use super::location::Location;
 
 #[derive(Debug)]
 pub enum LitKind {
