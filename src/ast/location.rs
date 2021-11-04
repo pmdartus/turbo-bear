@@ -2,7 +2,7 @@ use pest::iterators::Pair;
 
 use crate::grammar::Rule;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Location {
     pub start: usize,
     pub end: usize,
@@ -30,8 +30,4 @@ impl<'a> From<&Pair<'a, Rule>> for Location {
         let span = pair.as_span();
         Location::new(span.start(), span.end())
     }
-}
-
-pub trait Locatable {
-    fn location(&self) -> &Location;
 }

@@ -6,39 +6,41 @@ input_file: src/test/fixtures/variable-declaration.tb
 ---
 Ok(
     Program {
-        statements: [
-            Statement {
-                stmt: VariableDeclaration {
-                    identifier: Identifier {
+        stmts: [
+            Stmt {
+                kind: Var(
+                    Ident {
                         name: "a",
                         location: Location {
                             start: 4,
                             end: 5,
                         },
                     },
-                    ty: None,
-                    init: None,
-                },
+                    None,
+                    None,
+                ),
                 location: Location {
                     start: 0,
                     end: 6,
                 },
             },
-            Statement {
-                stmt: VariableDeclaration {
-                    identifier: Identifier {
+            Stmt {
+                kind: Var(
+                    Ident {
                         name: "b",
                         location: Location {
                             start: 11,
                             end: 12,
                         },
                     },
-                    ty: None,
-                    init: Some(
-                        Expression {
-                            expr: Integer(
-                                Integer {
-                                    value: 1,
+                    None,
+                    Some(
+                        Expr {
+                            kind: Lit(
+                                Lit {
+                                    kind: Int(
+                                        1,
+                                    ),
                                     location: Location {
                                         start: 15,
                                         end: 16,
@@ -51,23 +53,23 @@ Ok(
                             },
                         },
                     ),
-                },
+                ),
                 location: Location {
                     start: 7,
                     end: 17,
                 },
             },
-            Statement {
-                stmt: VariableDeclaration {
-                    identifier: Identifier {
+            Stmt {
+                kind: Var(
+                    Ident {
                         name: "c",
                         location: Location {
                             start: 22,
                             end: 23,
                         },
                     },
-                    ty: Some(
-                        Identifier {
+                    Some(
+                        Ty {
                             name: "int",
                             location: Location {
                                 start: 25,
@@ -75,24 +77,24 @@ Ok(
                             },
                         },
                     ),
-                    init: None,
-                },
+                    None,
+                ),
                 location: Location {
                     start: 18,
                     end: 29,
                 },
             },
-            Statement {
-                stmt: VariableDeclaration {
-                    identifier: Identifier {
+            Stmt {
+                kind: Var(
+                    Ident {
                         name: "d",
                         location: Location {
                             start: 34,
                             end: 35,
                         },
                     },
-                    ty: Some(
-                        Identifier {
+                    Some(
+                        Ty {
                             name: "int",
                             location: Location {
                                 start: 37,
@@ -100,11 +102,13 @@ Ok(
                             },
                         },
                     ),
-                    init: Some(
-                        Expression {
-                            expr: Integer(
-                                Integer {
-                                    value: 1,
+                    Some(
+                        Expr {
+                            kind: Lit(
+                                Lit {
+                                    kind: Int(
+                                        1,
+                                    ),
                                     location: Location {
                                         start: 43,
                                         end: 44,
@@ -117,7 +121,7 @@ Ok(
                             },
                         },
                     ),
-                },
+                ),
                 location: Location {
                     start: 30,
                     end: 45,

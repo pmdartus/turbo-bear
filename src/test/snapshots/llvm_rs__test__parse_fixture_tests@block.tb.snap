@@ -6,22 +6,24 @@ input_file: src/test/fixtures/block.tb
 ---
 Ok(
     Program {
-        statements: [
-            Statement {
-                stmt: VariableDeclaration {
-                    identifier: Identifier {
+        stmts: [
+            Stmt {
+                kind: Var(
+                    Ident {
                         name: "a",
                         location: Location {
                             start: 4,
                             end: 5,
                         },
                     },
-                    ty: None,
-                    init: Some(
-                        Expression {
-                            expr: Integer(
-                                Integer {
-                                    value: 1,
+                    None,
+                    Some(
+                        Expr {
+                            kind: Lit(
+                                Lit {
+                                    kind: Int(
+                                        1,
+                                    ),
                                     location: Location {
                                         start: 8,
                                         end: 9,
@@ -34,93 +36,109 @@ Ok(
                             },
                         },
                     ),
-                },
+                ),
                 location: Location {
                     start: 0,
                     end: 10,
                 },
             },
-            Statement {
-                stmt: Block {
-                    statements: [
-                        Statement {
-                            stmt: VariableDeclaration {
-                                identifier: Identifier {
-                                    name: "b",
-                                    location: Location {
-                                        start: 22,
-                                        end: 23,
-                                    },
-                                },
-                                ty: None,
-                                init: Some(
-                                    Expression {
-                                        expr: Integer(
-                                            Integer {
-                                                value: 2,
-                                                location: Location {
-                                                    start: 26,
-                                                    end: 27,
-                                                },
-                                            },
-                                        ),
+            Stmt {
+                kind: Block(
+                    Block {
+                        stmts: [
+                            Stmt {
+                                kind: Var(
+                                    Ident {
+                                        name: "b",
                                         location: Location {
-                                            start: 26,
-                                            end: 27,
+                                            start: 22,
+                                            end: 23,
                                         },
                                     },
-                                ),
-                            },
-                            location: Location {
-                                start: 18,
-                                end: 28,
-                            },
-                        },
-                        Statement {
-                            stmt: Block {
-                                statements: [
-                                    Statement {
-                                        stmt: VariableDeclaration {
-                                            identifier: Identifier {
-                                                name: "a",
-                                                location: Location {
-                                                    start: 52,
-                                                    end: 53,
+                                    None,
+                                    Some(
+                                        Expr {
+                                            kind: Lit(
+                                                Lit {
+                                                    kind: Int(
+                                                        2,
+                                                    ),
+                                                    location: Location {
+                                                        start: 26,
+                                                        end: 27,
+                                                    },
                                                 },
+                                            ),
+                                            location: Location {
+                                                start: 26,
+                                                end: 27,
                                             },
-                                            ty: None,
-                                            init: Some(
-                                                Expression {
-                                                    expr: Integer(
-                                                        Integer {
-                                                            value: 4,
+                                        },
+                                    ),
+                                ),
+                                location: Location {
+                                    start: 18,
+                                    end: 28,
+                                },
+                            },
+                            Stmt {
+                                kind: Block(
+                                    Block {
+                                        stmts: [
+                                            Stmt {
+                                                kind: Var(
+                                                    Ident {
+                                                        name: "a",
+                                                        location: Location {
+                                                            start: 52,
+                                                            end: 53,
+                                                        },
+                                                    },
+                                                    None,
+                                                    Some(
+                                                        Expr {
+                                                            kind: Lit(
+                                                                Lit {
+                                                                    kind: Int(
+                                                                        4,
+                                                                    ),
+                                                                    location: Location {
+                                                                        start: 56,
+                                                                        end: 57,
+                                                                    },
+                                                                },
+                                                            ),
                                                             location: Location {
                                                                 start: 56,
                                                                 end: 57,
                                                             },
                                                         },
                                                     ),
-                                                    location: Location {
-                                                        start: 56,
-                                                        end: 57,
-                                                    },
+                                                ),
+                                                location: Location {
+                                                    start: 48,
+                                                    end: 58,
                                                 },
-                                            ),
-                                        },
+                                            },
+                                        ],
                                         location: Location {
-                                            start: 48,
-                                            end: 58,
+                                            start: 38,
+                                            end: 64,
                                         },
                                     },
-                                ],
+                                ),
+                                location: Location {
+                                    start: 38,
+                                    end: 64,
+                                },
                             },
-                            location: Location {
-                                start: 38,
-                                end: 64,
-                            },
+                        ],
+                        location: Location {
+                            start: 12,
+                            end: 66,
                         },
-                    ],
-                },
+                    },
+                ),
                 location: Location {
                     start: 12,
                     end: 66,

@@ -6,50 +6,56 @@ input_file: src/test/fixtures/function_declaration.tb
 ---
 Ok(
     Program {
-        statements: [
-            Statement {
-                stmt: FunctionDeclaration {
-                    identifier: Identifier {
+        stmts: [
+            Stmt {
+                kind: Fn(
+                    Ident {
                         name: "main",
                         location: Location {
                             start: 3,
                             end: 7,
                         },
                     },
-                    parameters: [],
-                    return_ty: Identifier {
+                    [],
+                    Ty {
                         name: "int",
                         location: Location {
                             start: 13,
                             end: 16,
                         },
                     },
-                    body: [],
-                },
+                    Block {
+                        stmts: [],
+                        location: Location {
+                            start: 17,
+                            end: 19,
+                        },
+                    },
+                ),
                 location: Location {
                     start: 0,
                     end: 19,
                 },
             },
-            Statement {
-                stmt: FunctionDeclaration {
-                    identifier: Identifier {
+            Stmt {
+                kind: Fn(
+                    Ident {
                         name: "single",
                         location: Location {
                             start: 23,
                             end: 29,
                         },
                     },
-                    parameters: [
+                    [
                         (
-                            Identifier {
+                            Ident {
                                 name: "a",
                                 location: Location {
                                     start: 30,
                                     end: 31,
                                 },
                             },
-                            Identifier {
+                            Ty {
                                 name: "int",
                                 location: Location {
                                     start: 33,
@@ -58,39 +64,45 @@ Ok(
                             },
                         ),
                     ],
-                    return_ty: Identifier {
+                    Ty {
                         name: "int",
                         location: Location {
                             start: 41,
                             end: 44,
                         },
                     },
-                    body: [],
-                },
+                    Block {
+                        stmts: [],
+                        location: Location {
+                            start: 45,
+                            end: 47,
+                        },
+                    },
+                ),
                 location: Location {
                     start: 20,
                     end: 47,
                 },
             },
-            Statement {
-                stmt: FunctionDeclaration {
-                    identifier: Identifier {
+            Stmt {
+                kind: Fn(
+                    Ident {
                         name: "double",
                         location: Location {
                             start: 51,
                             end: 57,
                         },
                     },
-                    parameters: [
+                    [
                         (
-                            Identifier {
+                            Ident {
                                 name: "a",
                                 location: Location {
                                     start: 58,
                                     end: 59,
                                 },
                             },
-                            Identifier {
+                            Ty {
                                 name: "int",
                                 location: Location {
                                     start: 61,
@@ -99,14 +111,14 @@ Ok(
                             },
                         ),
                         (
-                            Identifier {
+                            Ident {
                                 name: "b",
                                 location: Location {
                                     start: 66,
                                     end: 67,
                                 },
                             },
-                            Identifier {
+                            Ty {
                                 name: "int",
                                 location: Location {
                                     start: 69,
@@ -115,15 +127,21 @@ Ok(
                             },
                         ),
                     ],
-                    return_ty: Identifier {
+                    Ty {
                         name: "int",
                         location: Location {
                             start: 77,
                             end: 80,
                         },
                     },
-                    body: [],
-                },
+                    Block {
+                        stmts: [],
+                        location: Location {
+                            start: 81,
+                            end: 83,
+                        },
+                    },
+                ),
                 location: Location {
                     start: 48,
                     end: 83,
