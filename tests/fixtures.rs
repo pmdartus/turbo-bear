@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::parser::parse_program;
+use turbo_bear::parser::parse_program;
 
 #[test]
 fn parse_fixture_tests() {

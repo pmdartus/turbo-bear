@@ -1,7 +1,7 @@
 ---
-source: src/test/mod.rs
+source: tests/fixtures.rs
 expression: program
-input_file: src/test/fixtures/expression.tb
+input_file: tests/fixtures/expression.tb
 
 ---
 Ok(
