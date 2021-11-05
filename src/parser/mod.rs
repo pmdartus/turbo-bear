@@ -16,17 +16,27 @@ pub mod error;
 mod grammar;
 
 use self::{
-    error::ParsingError,
+    error::{ParsingError, ParsingErrorKind},
     grammar::{Grammar, Rule},
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParsingScope {
+    Program,
+    Fn,
+}
+
 struct ParsingCtx {
+    scope: ParsingScope,
     errors: Vec<ParsingError>,
 }
 
 impl ParsingCtx {
     fn new() -> Self {
-        ParsingCtx { errors: Vec::new() }
+        ParsingCtx {
+            scope: ParsingScope::Program,
+            errors: Vec::new(),
+        }
     }
 
     fn is_failed(&self) -> bool {
@@ -35,32 +45,37 @@ impl ParsingCtx {
 }
 
 pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
-    let mut pairs = Grammar::parse(Rule::program, input).unwrap();
+    // let mut pairs = Grammar::parse(Rule::program, input);
 
-    let start = 0;
-    let mut end = 0;
+    match Grammar::parse(Rule::program, input) {
+        Ok(mut pairs) => {
+            let start = 0;
+            let mut end = 0;
 
-    let mut ctx = ParsingCtx::new();
-    let mut stmts = Vec::new();
+            let mut ctx = ParsingCtx::new();
+            let mut stmts = Vec::new();
 
-    while let Some(pair) = pairs.next() {
-        match pair.as_rule() {
-            Rule::EOI => end = pair.as_span().end(),
-            _ => {
-                if let Some(stmt) = parse_stmt(&mut ctx, pair) {
-                    stmts.push(stmt);
-                }
+            while let Some(pair) = pairs.next() {
+                match pair.as_rule() {
+                    Rule::EOI => end = pair.as_span().end(),
+                    _ => {
+                        if let Some(stmt) = parse_stmt(&mut ctx, pair) {
+                            stmts.push(stmt);
+                        }
+                    }
+                };
             }
-        };
-    }
 
-    if ctx.is_failed() {
-        Err(ctx.errors)
-    } else {
-        Ok(Program {
-            stmts,
-            location: Location::new(start, end),
-        })
+            if ctx.is_failed() {
+                Err(ctx.errors)
+            } else {
+                Ok(Program {
+                    stmts,
+                    location: Location::new(start, end),
+                })
+            }
+        }
+        Err(err) => Err(vec![ParsingError::from(err)]),
     }
 }
 
@@ -111,7 +126,11 @@ fn parse_stmt(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Option<Stmt> {
                 }
 
                 let return_ty = parse_ty(inner.next().unwrap())?;
+
+                let current_scope = ctx.scope;
+                ctx.scope = ParsingScope::Fn;
                 let body = parse_block(ctx, inner.next().unwrap());
+                ctx.scope = current_scope;
 
                 Ok(Stmt {
                     kind: StmtKind::Fn(ident, params, return_ty, body),
@@ -120,6 +139,13 @@ fn parse_stmt(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Option<Stmt> {
             }
             Rule::return_statement => {
                 let mut inner = pair.into_inner();
+
+                if ctx.scope == ParsingScope::Program {
+                    return Err(ParsingError::new(
+                        ParsingErrorKind::TopLevelReturn,
+                        location,
+                    ));
+                }
 
                 let expr = match inner.next() {
                     Some(expr) => Some(parse_expr(ctx, expr)?),
@@ -330,7 +356,10 @@ fn parse_ident(pair: Pair<Rule>) -> Result<Ident, ParsingError> {
             let location = Location::from(&pair);
 
             if is_reserved(&name) {
-                Err(ParsingError::ReservedKeyword { name })
+                Err(ParsingError::new(
+                    ParsingErrorKind::ReservedKeyword(name),
+                    location,
+                ))
             } else {
                 Ok(Ident { name, location })
             }
@@ -346,7 +375,10 @@ fn parse_ty(pair: Pair<Rule>) -> Result<Ty, ParsingError> {
             let location = Location::from(&pair);
 
             if is_reserved(&name) {
-                Err(ParsingError::ReservedKeyword { name })
+                Err(ParsingError::new(
+                    ParsingErrorKind::ReservedKeyword(name),
+                    location,
+                ))
             } else {
                 Ok(Ty { name, location })
             }
@@ -365,13 +397,23 @@ fn parse_lit(pair: Pair<Rule>) -> Result<Lit, ParsingError> {
             _ => unreachable!("Unexpected boolean value {:?}", pair),
         },
         Rule::integer => {
-            // TODO: Add parsing error handling
-            let value: i64 = pair.as_str().to_owned().parse().unwrap();
+            let value: i64 = pair.as_str().to_owned().parse().map_err(|_| {
+                ParsingError::new(
+                    ParsingErrorKind::InvalidInteger(pair.to_string().to_owned()),
+                    location,
+                )
+            })?;
+
             LitKind::Int(value)
         }
         Rule::float => {
-            // TODO: Add parsing error handling
-            let value: f64 = pair.as_str().to_owned().parse().unwrap();
+            let value: f64 = pair.as_str().to_owned().parse().map_err(|_| {
+                ParsingError::new(
+                    ParsingErrorKind::InvalidFloat(pair.to_string().to_owned()),
+                    location,
+                )
+            })?;
+
             LitKind::Float(value)
         }
         _ => unreachable!("Unexpected literal value {:?}", pair),

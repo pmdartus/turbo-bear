@@ -1,0 +1,17 @@
+---
+source: tests/fixtures.rs
+expression: program
+
+---
+Err(
+    [
+        ParsingError {
+            kind: Custom(
+                "Expected +, -, *, /, ==, !=, >, >=, <, <=, &&, ||.",
+            ),
+            location: Position(
+                1,
+            ),
+        },
+    ],
+)

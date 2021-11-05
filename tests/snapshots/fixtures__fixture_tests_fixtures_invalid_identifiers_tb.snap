@@ -1,0 +1,86 @@
+---
+source: tests/fixtures.rs
+expression: program
+
+---
+Err(
+    [
+        ParsingError {
+            kind: ReservedKeyword(
+                "class",
+            ),
+            location: Span(
+                (
+                    4,
+                    9,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "else",
+            ),
+            location: Span(
+                (
+                    15,
+                    19,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "false",
+            ),
+            location: Span(
+                (
+                    25,
+                    30,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "fn",
+            ),
+            location: Span(
+                (
+                    36,
+                    38,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "let",
+            ),
+            location: Span(
+                (
+                    44,
+                    47,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "if",
+            ),
+            location: Span(
+                (
+                    53,
+                    55,
+                ),
+            ),
+        },
+        ParsingError {
+            kind: ReservedKeyword(
+                "true",
+            ),
+            location: Span(
+                (
+                    61,
+                    65,
+                ),
+            ),
+        },
+    ],
+)
