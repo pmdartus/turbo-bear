@@ -299,6 +299,32 @@ fn parse_expr(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Result<Expr, ParsingErr
             }
         }
 
+        Rule::call => {
+            let mut inner = pair.into_inner();
+
+            let mut expr = parse_expr(ctx, inner.next().unwrap())?;
+
+            while let Some(pair) = inner.next() {
+                let location = Location::new(
+                    expr.location.start,
+                    pair.as_span().end()
+                );
+
+                let mut args = Vec::new();
+                for inner in pair.into_inner() {
+                    let arg = parse_expr(ctx, inner)?;
+                    args.push(Box::new(arg));
+                }
+
+                expr = Expr {
+                    kind: ExprKind::Call(Box::new(expr), args),
+                    location
+                }
+            };
+
+            Ok(expr)
+        }
+
         Rule::identifier => {
             let ident = parse_ident(pair)?;
             Ok(Expr {

@@ -2,7 +2,7 @@ use std::fmt;
 
 use pest::error::{Error, ErrorVariant, InputLocation};
 
-use crate::ast::location::{Location};
+use crate::ast::location::Location;
 
 use super::Rule;
 
@@ -55,7 +55,7 @@ impl ParsingError {
     pub fn new(kind: ParsingErrorKind, location: Location) -> Self {
         ParsingError {
             kind,
-            location: ParsingErrorLocation::Span((location.start, location.end))
+            location: ParsingErrorLocation::Span((location.start, location.end)),
         }
     }
 }
@@ -72,13 +72,13 @@ impl From<Error<Rule>> for ParsingError {
             ErrorVariant::ParsingError {
                 positives,
                 negatives,
-            } => { 
+            } => {
                 let mut rules = Vec::new();
                 rules.append(&mut positives.clone());
                 rules.append(&mut negatives.clone());
 
                 format!("Expected {}.", format_rules(rules))
-            },
+            }
             ErrorVariant::CustomError { message } => message,
         };
 
@@ -99,42 +99,44 @@ fn format_rules(rules: Vec<Rule>) -> String {
         .into_iter()
         .map(|rule| {
             match rule {
-                Rule::EOI => "end of file",
-                Rule::program => "program",
-                Rule::statement => "statement",
-                Rule::block => "block",
-                Rule::variable_declaration => "variable declaration",
-                Rule::function_declaration => "function declaration",
-                Rule::function_params => "function parameters",
-                Rule::expression_statement => "expression statement",
-                Rule::return_statement => "return statement",
-                Rule::plus => "+",
-                Rule::minus => "-",
-                Rule::star => "*",
-                Rule::slash => "/",
-                Rule::equal => "=",
-                Rule::equal_equal => "==",
+                Rule::and => "&&",
+                Rule::arguments => "arguments",
                 Rule::bang => "!",
                 Rule::bang_equal => "!=",
+                Rule::binary => "binary expression",
+                Rule::binary_operator => "binary operator",
+                Rule::block => "block",
+                Rule::boolean => "boolean",
+                Rule::call => "function call",
+                Rule::EOI => "end of file",
+                Rule::equal => "=",
+                Rule::equal_equal => "==",
+                Rule::expression => "expression",
+                Rule::expression_statement => "expression statement",
+                Rule::float | Rule::float_characteristic | Rule::float_mantissa => "float",
+                Rule::function_declaration => "function declaration",
                 Rule::greater => ">",
                 Rule::greater_equal => ">=",
+                Rule::identifier => "identifier",
+                Rule::integer => "integer",
                 Rule::less => "<",
                 Rule::less_equal => "<=",
-                Rule::and => "&&",
-                Rule::or => "||",
-                Rule::unary_operator => "unary operator",
-                Rule::logical_operator => "logical operator",
-                Rule::binary_operator => "binary operator",
-                Rule::expression => "expression",
                 Rule::logical => "logical expression",
-                Rule::binary => "binary expression",
-                Rule::unary => "unary expression",
+                Rule::logical_operator => "logical operator",
+                Rule::minus => "-",
+                Rule::or => "||",
+                Rule::parameters => "function parameters",
+                Rule::plus => "+",
                 Rule::primary => "primary expression",
-                Rule::identifier => "identifier",
+                Rule::program => "program",
+                Rule::return_statement => "return statement",
+                Rule::slash => "/",
+                Rule::star => "*",
+                Rule::statement => "statement",
                 Rule::ty => "type",
-                Rule::float | Rule::float_characteristic | Rule::float_mantissa => "float",
-                Rule::integer => "integer",
-                Rule::boolean => "boolean",
+                Rule::unary => "unary expression",
+                Rule::unary_operator => "unary operator",
+                Rule::variable_declaration => "variable declaration",
                 Rule::WHITESPACE => "whitespace character",
             }
             .to_owned()

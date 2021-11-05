@@ -55,6 +55,7 @@ pub enum ExprKind {
     Binary(BinaryOp, Box<Expr>, Box<Expr>),
     Unary(UnaryOp, Box<Expr>),
     Ident(Ident),
+    Call(Box<Expr>, Vec<Box<Expr>>),
     Lit(Lit),
 }
 

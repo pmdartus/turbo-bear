@@ -6,16 +6,11 @@ program = _{ SOI ~ statement* ~ EOI }
 
 statement = _{ variable_declaration | function_declaration | return_statement | block | expression_statement }
 
-block = { "{" ~ statement* ~ "}" }
-
 variable_declaration = { "let" ~ identifier ~ (":" ~ ty)? ~ ("=" ~ expression)? ~ ";" }
-
-function_declaration = { "fn" ~ identifier ~ function_params ~ "->" ~ ty ~ block }
-function_params = {  "(" ~ (identifier ~ ":" ~ ty ~ ("," ~ identifier ~ ":" ~ ty)*)? ~ ")" }
-
+function_declaration = { "fn" ~ identifier ~ parameters ~ "->" ~ ty ~ block }
 expression_statement = { expression ~ ";" }
-
 return_statement = { "return" ~ expression? ~ ";" }
+block = { "{" ~ statement* ~ "}" }
 
 plus            = { "+" }
 minus           = { "-" }
@@ -40,8 +35,12 @@ binary_operator     =  _{ plus | minus | star | slash | equal_equal | bang_equal
 expression = { logical | binary | unary }
     logical     = { binary ~ (logical_operator ~ binary)* }
     binary      = { unary ~ (binary_operator ~ unary)* }
-    unary       = { (unary_operator ~ unary) | primary }
+    unary       = { (unary_operator ~ unary) | call }
+    call        = { primary ~ ( "(" ~ arguments? ~ ")" )* }
     primary     = _{ boolean | float | integer | identifier | "(" ~ expression ~ ")" }
+
+parameters = {  "(" ~ (identifier ~ ":" ~ ty ~ ("," ~ identifier ~ ":" ~ ty)*)? ~ ")" }
+arguments = { expression ~ ( "," ~ expression )* }
 
 identifier = ${ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
