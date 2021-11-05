@@ -11,3 +11,4 @@ pest_derive = "2.1"
 
 [dev-dependencies]
 insta = { version = "1.8.0", features = ["glob"] }
+test-generator = "0.3.0"

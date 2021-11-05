@@ -1,7 +1,6 @@
 ---
 source: tests/fixtures.rs
 expression: program
-input_file: tests/fixtures/block.tb
 
 ---
 Ok(
