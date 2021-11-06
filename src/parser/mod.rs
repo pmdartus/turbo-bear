@@ -305,10 +305,7 @@ fn parse_expr(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Result<Expr, ParsingErr
             let mut expr = parse_expr(ctx, inner.next().unwrap())?;
 
             while let Some(pair) = inner.next() {
-                let location = Location::new(
-                    expr.location.start,
-                    pair.as_span().end()
-                );
+                let location = Location::new(expr.location.start, pair.as_span().end());
 
                 let mut args = Vec::new();
                 for inner in pair.into_inner() {
@@ -318,9 +315,9 @@ fn parse_expr(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Result<Expr, ParsingErr
 
                 expr = Expr {
                     kind: ExprKind::Call(Box::new(expr), args),
-                    location
+                    location,
                 }
-            };
+            }
 
             Ok(expr)
         }
