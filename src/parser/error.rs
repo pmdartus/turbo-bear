@@ -70,12 +70,12 @@ impl From<Error<Rule>> for ParsingError {
     fn from(err: Error<Rule>) -> Self {
         let msg = match err.variant {
             ErrorVariant::ParsingError {
-                positives,
-                negatives,
+                mut positives,
+                mut negatives,
             } => {
                 let mut rules = Vec::new();
-                rules.append(&mut positives.clone());
-                rules.append(&mut negatives.clone());
+                rules.append(&mut positives);
+                rules.append(&mut negatives);
 
                 format!("Expected {}.", format_rules(rules))
             }

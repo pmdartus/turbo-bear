@@ -40,9 +40,9 @@ impl<'ctx> CodeGen<'ctx> {
         self.module.get_function(name)
     }
 
-    fn build_logical(&self, op: &LogicalOp, left: &Box<Expr>, right: &Box<Expr>) -> AnyValueEnum {
-        let lhs = self.build_expr(&left).into_int_value();
-        let rhs = self.build_expr(&right).into_int_value();
+    fn build_logical(&self, op: &LogicalOp, left: &Expr, right: &Expr) -> AnyValueEnum {
+        let lhs = self.build_expr(left).into_int_value();
+        let rhs = self.build_expr(right).into_int_value();
 
         match op {
             LogicalOp::And => self.builder.build_and(lhs, rhs, "and").as_any_value_enum(),
@@ -50,9 +50,9 @@ impl<'ctx> CodeGen<'ctx> {
         }
     }
 
-    fn build_binary(&self, op: &BinaryOp, left: &Box<Expr>, right: &Box<Expr>) -> AnyValueEnum {
-        let lhs = self.build_expr(&left);
-        let rhs = self.build_expr(&right);
+    fn build_binary(&self, op: &BinaryOp, left: &Expr, right: &Expr) -> AnyValueEnum {
+        let lhs = self.build_expr(left);
+        let rhs = self.build_expr(right);
 
         match op {
             BinaryOp::Add => match (lhs, rhs) {
@@ -146,7 +146,7 @@ impl<'ctx> CodeGen<'ctx> {
         }
     }
 
-    fn build_unary(&self, op: &UnaryOp, expr: &Box<Expr>) -> AnyValueEnum {
+    fn build_unary(&self, op: &UnaryOp, expr: &Expr) -> AnyValueEnum {
         let expr = self.build_expr(expr);
 
         match op {
@@ -179,7 +179,7 @@ impl<'ctx> CodeGen<'ctx> {
         }
     }
 
-    fn build_call(&self, callee: &Box<Expr>, args: &Vec<Box<Expr>>) -> AnyValueEnum {
+    fn build_call(&self, callee: &Expr, args: &[Box<Expr>]) -> AnyValueEnum {
         let ident = match &callee.kind {
             ExprKind::Ident(ident) => ident,
             _ => panic!("Unexpected callee, only accept identifier"),
@@ -188,7 +188,7 @@ impl<'ctx> CodeGen<'ctx> {
         match self.get_function(&ident.name) {
             Some(fn_value) => {
                 let args = args
-                    .into_iter()
+                    .iter()
                     .map(|arg| self.build_expr(arg).try_into().unwrap())
                     .collect::<Vec<BasicValueEnum>>();
 
@@ -201,7 +201,7 @@ impl<'ctx> CodeGen<'ctx> {
     fn build_lit(&self, lit: &Lit) -> AnyValueEnum {
         match lit.kind {
             LitKind::Int(value) => {
-                AnyValueEnum::from(self.context.i32_type().const_int(value.into(), false))
+                AnyValueEnum::from(self.context.i32_type().const_int(value, false))
             }
             LitKind::Float(value) => AnyValueEnum::from(self.context.f32_type().const_float(value)),
             LitKind::Bool(value) => {
@@ -225,13 +225,13 @@ impl<'ctx> CodeGen<'ctx> {
     fn build_fn(
         &self,
         ident: &Ident,
-        params: &Vec<(Ident, Ty)>,
+        params: &[(Ident, Ty)],
         return_ty: &Ty,
         block: &Block,
     ) -> FunctionValue {
         let return_type = self.get_type(return_ty);
         let params_type = params
-            .into_iter()
+            .iter()
             .map(|(_, ty)| self.get_type(ty).into())
             .collect::<Vec<BasicTypeEnum>>();
 
@@ -253,7 +253,7 @@ impl<'ctx> CodeGen<'ctx> {
                 StmtKind::Fn(ident, params, return_ty, block) => {
                     let return_type = self.get_type(return_ty);
                     let params_type = params
-                        .into_iter()
+                        .iter()
                         .map(|(_, ty)| self.get_type(ty).into())
                         .collect::<Vec<BasicTypeEnum>>();
 
