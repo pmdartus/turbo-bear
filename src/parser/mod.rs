@@ -44,9 +44,7 @@ impl ParsingCtx {
     }
 }
 
-pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
-    // let mut pairs = Grammar::parse(Rule::program, input);
-
+pub fn parse(input: &str) -> Result<Program, Vec<ParsingError>> {
     match Grammar::parse(Rule::program, input) {
         Ok(pairs) => {
             let start = 0;
