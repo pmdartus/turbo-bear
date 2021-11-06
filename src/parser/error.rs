@@ -2,9 +2,8 @@ use std::fmt;
 
 use pest::error::{Error, ErrorVariant, InputLocation};
 
-use crate::ast::location::Location;
-
 use super::Rule;
+use crate::ast::location::Location;
 
 #[derive(Debug)]
 pub enum ParsingErrorKind {
