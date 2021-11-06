@@ -40,7 +40,7 @@ impl ParsingCtx {
     }
 
     fn is_failed(&self) -> bool {
-        self.errors.len() > 0
+        !self.errors.is_empty()
     }
 }
 
@@ -48,14 +48,14 @@ pub fn parse_program(input: &str) -> Result<Program, Vec<ParsingError>> {
     // let mut pairs = Grammar::parse(Rule::program, input);
 
     match Grammar::parse(Rule::program, input) {
-        Ok(mut pairs) => {
+        Ok(pairs) => {
             let start = 0;
             let mut end = 0;
 
             let mut ctx = ParsingCtx::new();
             let mut stmts = Vec::new();
 
-            while let Some(pair) = pairs.next() {
+            for pair in pairs {
                 match pair.as_rule() {
                     Rule::EOI => end = pair.as_span().end(),
                     _ => {
@@ -193,10 +193,9 @@ fn parse_block(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Block {
 
     match pair.as_rule() {
         Rule::block => {
-            let mut inner = pair.into_inner();
             let mut stmts = Vec::new();
 
-            while let Some(pair) = inner.next() {
+            for pair in pair.into_inner() {
                 if let Some(stmt) = parse_stmt(ctx, pair) {
                     stmts.push(stmt);
                 }
@@ -304,11 +303,8 @@ fn parse_expr(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Result<Expr, ParsingErr
 
             let mut expr = parse_expr(ctx, inner.next().unwrap())?;
 
-            while let Some(pair) = inner.next() {
-                let location = Location::new(
-                    expr.location.start,
-                    pair.as_span().end()
-                );
+            for pair in inner {
+                let location = Location::new(expr.location.start, pair.as_span().end());
 
                 let mut args = Vec::new();
                 for inner in pair.into_inner() {
@@ -318,9 +314,9 @@ fn parse_expr(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Result<Expr, ParsingErr
 
                 expr = Expr {
                     kind: ExprKind::Call(Box::new(expr), args),
-                    location
+                    location,
                 }
-            };
+            }
 
             Ok(expr)
         }
@@ -424,20 +420,14 @@ fn parse_lit(pair: Pair<Rule>) -> Result<Lit, ParsingError> {
         },
         Rule::integer => {
             let value: u64 = pair.as_str().to_owned().parse().map_err(|_| {
-                ParsingError::new(
-                    ParsingErrorKind::InvalidInteger(pair.to_string().to_owned()),
-                    location,
-                )
+                ParsingError::new(ParsingErrorKind::InvalidInteger(pair.to_string()), location)
             })?;
 
             LitKind::Int(value)
         }
         Rule::float => {
             let value: f64 = pair.as_str().to_owned().parse().map_err(|_| {
-                ParsingError::new(
-                    ParsingErrorKind::InvalidFloat(pair.to_string().to_owned()),
-                    location,
-                )
+                ParsingError::new(ParsingErrorKind::InvalidFloat(pair.to_string()), location)
             })?;
 
             LitKind::Float(value)

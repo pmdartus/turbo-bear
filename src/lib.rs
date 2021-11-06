@@ -6,5 +6,5 @@ extern crate pest;
 extern crate lazy_static;
 
 pub mod ast;
-pub mod parser;
 pub mod codegen;
+pub mod parser;

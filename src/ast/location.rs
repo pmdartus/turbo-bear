@@ -6,10 +6,7 @@ pub struct Location {
 
 impl Location {
     pub fn new(start: usize, end: usize) -> Self {
-        Location {
-            start,
-            end
-        }
+        Location { start, end }
     }
 
     pub fn start(&self) -> usize {

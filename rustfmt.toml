@@ -1,0 +1,7 @@
+# https://rust-lang.github.io/rustfmt/?version=v1.4.38&search=
+
+comment_width = 100
+group_imports = "StdExternalCrate"
+unstable_features = true
+use_field_init_shorthand = true
+version = "Two"
