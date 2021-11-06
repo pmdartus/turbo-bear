@@ -2,7 +2,7 @@ use super::location::Location;
 
 #[derive(Debug)]
 pub enum LitKind {
-    Int(i64),
+    Int(u64),
     Float(f64),
     Bool(bool),
 }

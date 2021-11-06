@@ -1,7 +1,6 @@
-use turbo_bear::parser::parse_program;
+use turbo_bear::{codegen::evaluate_program, parser::parse_program};
 
 fn main() {
-    let program = parse_program("let a = 1 + 2 * 4;").unwrap();
-    println!("{:#?}", program);
-    // evaluate_expression(program);
+    let program = parse_program("fn foo(a: int) -> int {}").unwrap();
+    evaluate_program(&program);
 }

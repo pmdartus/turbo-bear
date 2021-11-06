@@ -423,7 +423,7 @@ fn parse_lit(pair: Pair<Rule>) -> Result<Lit, ParsingError> {
             _ => unreachable!("Unexpected boolean value {:?}", pair),
         },
         Rule::integer => {
-            let value: i64 = pair.as_str().to_owned().parse().map_err(|_| {
+            let value: u64 = pair.as_str().to_owned().parse().map_err(|_| {
                 ParsingError::new(
                     ParsingErrorKind::InvalidInteger(pair.to_string().to_owned()),
                     location,
