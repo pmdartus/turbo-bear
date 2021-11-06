@@ -420,20 +420,14 @@ fn parse_lit(pair: Pair<Rule>) -> Result<Lit, ParsingError> {
         },
         Rule::integer => {
             let value: u64 = pair.as_str().to_owned().parse().map_err(|_| {
-                ParsingError::new(
-                    ParsingErrorKind::InvalidInteger(pair.to_string()),
-                    location,
-                )
+                ParsingError::new(ParsingErrorKind::InvalidInteger(pair.to_string()), location)
             })?;
 
             LitKind::Int(value)
         }
         Rule::float => {
             let value: f64 = pair.as_str().to_owned().parse().map_err(|_| {
-                ParsingError::new(
-                    ParsingErrorKind::InvalidFloat(pair.to_string()),
-                    location,
-                )
+                ParsingError::new(ParsingErrorKind::InvalidFloat(pair.to_string()), location)
             })?;
 
             LitKind::Float(value)
