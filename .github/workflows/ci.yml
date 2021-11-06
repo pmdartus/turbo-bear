@@ -9,26 +9,31 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install rust toolchain with rustfmt and clippy
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: rustfmt, clippy
 
-      - uses: actions-rs/cargo@v1
+      - name: Check format
+        uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: -- --check
 
-      - uses: actions-rs/clippy-check@v1
+      - name: Lint
+        uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
 
-      - uses: actions-rs/cargo@v1
+      - name: Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --all-features
 
-      - uses: actions-rs/cargo@v1
+      - name: Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
