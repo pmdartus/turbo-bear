@@ -40,7 +40,7 @@ impl ParsingCtx {
     }
 
     fn is_failed(&self) -> bool {
-        self.errors.is_empty()
+        !self.errors.is_empty()
     }
 }
 
