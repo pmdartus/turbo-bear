@@ -132,6 +132,7 @@ fn format_rules(rules: Vec<Rule>) -> String {
                 Rule::slash => "/",
                 Rule::star => "*",
                 Rule::statement => "statement",
+                Rule::top_level_decl => "top level declaration",
                 Rule::ty => "type",
                 Rule::unary => "unary expression",
                 Rule::unary_operator => "unary operator",

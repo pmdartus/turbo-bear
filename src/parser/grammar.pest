@@ -2,15 +2,16 @@
 // https://docs.rs/pest_derive/2.1.0/pest_derive/
 // https://pest.rs/book/grammars/syntax.html
 
-program = _{ SOI ~ statement* ~ EOI }
+program = _{ SOI ~ top_level_decl* ~ EOI }
 
-statement = _{ variable_declaration | function_declaration | return_statement | block | expression_statement }
+top_level_decl = _{ function_declaration }
+    function_declaration = { "fn" ~ identifier ~ parameters ~ "->" ~ ty ~ block }
 
-variable_declaration = { "let" ~ identifier ~ (":" ~ ty)? ~ ("=" ~ expression)? ~ ";" }
-function_declaration = { "fn" ~ identifier ~ parameters ~ "->" ~ ty ~ block }
-expression_statement = { expression ~ ";" }
-return_statement = { "return" ~ expression? ~ ";" }
-block = { "{" ~ statement* ~ "}" }
+statement = _{ variable_declaration | return_statement | block | expression_statement }
+    variable_declaration = { "let" ~ identifier ~ (":" ~ ty)? ~ ("=" ~ expression)? ~ ";" }
+    return_statement = { "return" ~ expression? ~ ";" }
+    expression_statement = { expression ~ ";" }
+
 
 plus            = { "+" }
 minus           = { "-" }
@@ -39,9 +40,12 @@ expression = { logical | binary | unary }
     call        = { primary ~ ( "(" ~ arguments? ~ ")" )* }
     primary     = _{ boolean | float | integer | identifier | "(" ~ expression ~ ")" }
 
+// Utilities
 parameters = {  "(" ~ (identifier ~ ":" ~ ty ~ ("," ~ identifier ~ ":" ~ ty)*)? ~ ")" }
 arguments = { expression ~ ( "," ~ expression )* }
+block = { "{" ~ statement* ~ "}" }
 
+// Atoms
 identifier = ${ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
 ty = { identifier }
@@ -54,4 +58,5 @@ integer = ${ "0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT* }
 
 boolean = { "true" | "false" }
 
+// Extra
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }

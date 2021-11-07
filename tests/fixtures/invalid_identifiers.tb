@@ -1,7 +1,9 @@
-let class;
-let else;
-let false;
-let fn;
-let let;
-let if;
-let true;
+fn main() -> void {
+    let class;
+    let else;
+    let false;
+    let fn;
+    let let;
+    let if;
+    let true;
+}

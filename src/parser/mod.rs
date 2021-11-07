@@ -6,8 +6,8 @@ use pest::{
 
 use crate::ast::{
     ast::{
-        BinaryOp, Block, Expr, ExprKind, Ident, Lit, LitKind, LogicalOp, Program, Stmt, StmtKind,
-        Ty, UnaryOp,
+        BinaryOp, Block, Decl, DeclKind, Expr, ExprKind, Ident, Lit, LitKind, LogicalOp, Program,
+        Stmt, StmtKind, TopLevelDecl, TopLevelDeclKind, Ty, UnaryOp,
     },
     location::Location,
 };
@@ -20,23 +20,13 @@ use self::{
     grammar::{Grammar, Rule},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ParsingScope {
-    Program,
-    Fn,
-}
-
 struct ParsingCtx {
-    scope: ParsingScope,
     errors: Vec<ParsingError>,
 }
 
 impl ParsingCtx {
     fn new() -> Self {
-        ParsingCtx {
-            scope: ParsingScope::Program,
-            errors: Vec::new(),
-        }
+        ParsingCtx { errors: Vec::new() }
     }
 
     fn is_failed(&self) -> bool {
@@ -51,16 +41,18 @@ pub fn parse(input: &str) -> Result<Program, Vec<ParsingError>> {
             let mut end = 0;
 
             let mut ctx = ParsingCtx::new();
-            let mut stmts = Vec::new();
+            let mut decls = Vec::new();
 
             for pair in pairs {
                 match pair.as_rule() {
                     Rule::EOI => end = pair.as_span().end(),
-                    _ => {
-                        if let Some(stmt) = parse_stmt(&mut ctx, pair) {
-                            stmts.push(stmt);
-                        }
+                    Rule::function_declaration => {
+                        match parse_top_level_decl(&mut ctx, pair) {
+                            Ok(decl) => decls.push(decl),
+                            Err(err) => ctx.errors.push(err),
+                        };
                     }
+                    _ => unreachable!("Unexpected top level declaration {:?}", pair),
                 };
             }
 
@@ -68,12 +60,43 @@ pub fn parse(input: &str) -> Result<Program, Vec<ParsingError>> {
                 Err(ctx.errors)
             } else {
                 Ok(Program {
-                    stmts,
+                    decls,
                     location: Location::new(start, end),
                 })
             }
         }
         Err(err) => Err(vec![ParsingError::from(err)]),
+    }
+}
+
+fn parse_top_level_decl(
+    ctx: &mut ParsingCtx,
+    pair: Pair<Rule>,
+) -> Result<TopLevelDecl, ParsingError> {
+    let location = Location::from(&pair);
+
+    match pair.as_rule() {
+        Rule::function_declaration => {
+            let mut inner = pair.into_inner();
+
+            let ident = parse_ident(inner.next().unwrap())?;
+
+            let mut params = Vec::new();
+            let mut parameter_pairs = inner.next().unwrap().into_inner();
+            while let (Some(name), Some(ty)) = (parameter_pairs.next(), parameter_pairs.next()) {
+                params.push((parse_ident(name)?, parse_ty(ty)?));
+            }
+
+            let return_ty = parse_ty(inner.next().unwrap())?;
+
+            let body = parse_block(ctx, inner.next().unwrap());
+
+            Ok(TopLevelDecl {
+                kind: TopLevelDeclKind::Fn(ident, params, return_ty, body),
+                location,
+            })
+        }
+        _ => unreachable!("Unexpected top level declaration {:?}", pair),
     }
 }
 
@@ -89,61 +112,26 @@ fn parse_stmt(ctx: &mut ParsingCtx, pair: Pair<Rule>) -> Option<Stmt> {
                 let mut ty: Option<Ty> = None;
                 let mut init: Option<Expr> = None;
 
-                if let Some(next) = inner.next() {
-                    match next.as_rule() {
-                        Rule::ty => ty = Some(parse_ty(next)?),
-                        Rule::expression => init = Some(parse_expr(ctx, next)?),
+                for inner_pair in inner {
+                    match inner_pair.as_rule() {
+                        Rule::ty => ty = Some(parse_ty(inner_pair)?),
+                        Rule::expression => init = Some(parse_expr(ctx, inner_pair)?),
                         _ => {
-                            unreachable!("Unexpected variable declaration type or init {:?}", next)
+                            unreachable!("Unexpected variable declaration {:?}", inner_pair)
                         }
                     }
                 }
 
-                if let Some(next) = inner.next() {
-                    match next.as_rule() {
-                        Rule::expression => init = Some(parse_expr(ctx, next)?),
-                        _ => unreachable!("Unexpected variable declaration  init {:?}", next),
-                    }
-                }
-
                 Ok(Stmt {
-                    kind: StmtKind::Var(ident, ty, init),
-                    location,
-                })
-            }
-            Rule::function_declaration => {
-                let mut inner = pair.into_inner();
-
-                let ident = parse_ident(inner.next().unwrap())?;
-
-                let mut params = Vec::new();
-                let mut parameter_pairs = inner.next().unwrap().into_inner();
-                while let (Some(name), Some(ty)) = (parameter_pairs.next(), parameter_pairs.next())
-                {
-                    params.push((parse_ident(name)?, parse_ty(ty)?));
-                }
-
-                let return_ty = parse_ty(inner.next().unwrap())?;
-
-                let current_scope = ctx.scope;
-                ctx.scope = ParsingScope::Fn;
-                let body = parse_block(ctx, inner.next().unwrap());
-                ctx.scope = current_scope;
-
-                Ok(Stmt {
-                    kind: StmtKind::Fn(ident, params, return_ty, body),
+                    kind: StmtKind::Decl(Decl {
+                        kind: DeclKind::Var(ident, ty, init),
+                        location,
+                    }),
                     location,
                 })
             }
             Rule::return_statement => {
                 let mut inner = pair.into_inner();
-
-                if ctx.scope == ParsingScope::Program {
-                    return Err(ParsingError::new(
-                        ParsingErrorKind::TopLevelReturn,
-                        location,
-                    ));
-                }
 
                 let expr = match inner.next() {
                     Some(expr) => Some(parse_expr(ctx, expr)?),

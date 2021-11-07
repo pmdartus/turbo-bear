@@ -244,14 +244,10 @@ impl<'ctx> CodeGen<'ctx> {
     }
 
     fn build_module(&self) {
-        for stmt in &self.program.stmts {
-            match &stmt.kind {
-                StmtKind::Var(ident, ty, init) => {
-                    let global_type = self.get_type(ty.as_ref().unwrap());
-                    self.module.add_global(global_type, None, &ident.name);
-                }
-                StmtKind::Fn(ident, params, return_ty, block) => {
-                    let return_type = self.get_type(return_ty);
+        for decl in &self.program.decls {
+            match &decl.kind {
+                TopLevelDeclKind::Fn(ident, params, return_ty, block) => {
+                    let return_type = self.get_type(&return_ty);
                     let params_type = params
                         .iter()
                         .map(|(_, ty)| self.get_type(ty).into())
@@ -264,7 +260,7 @@ impl<'ctx> CodeGen<'ctx> {
 
                     fn_value.verify(true);
                 }
-                _ => todo!("Unimplemented {:?}", stmt),
+                _ => todo!("Unimplemented {:?}", decl),
             }
         }
     }

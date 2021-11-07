@@ -1,4 +1,6 @@
-let a;
-let b = 1;
-let c: int;
-let d: int = 1;
+fn main() -> void {
+    let a;
+    let b = 1;
+    let c: int;
+    let d: int = 1;
+}

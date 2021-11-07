@@ -1,9 +1,11 @@
-let a = 1;
+fn main() -> void {
+    let a = 1;
 
-{
-    let b = 2;
-    
     {
-        let a = 4;
+        let b = 2;
+        
+        {
+            let a = 4;
+        }
     }
 }

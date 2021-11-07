@@ -5,79 +5,67 @@ expression: program
 ---
 Ok(
     Program {
-        stmts: [
-            Stmt {
-                kind: Var(
+        decls: [
+            TopLevelDecl {
+                kind: Fn(
                     Ident {
-                        name: "a",
+                        name: "main",
                         location: Location {
-                            start: 4,
-                            end: 5,
+                            start: 3,
+                            end: 7,
                         },
                     },
-                    None,
-                    Some(
-                        Expr {
-                            kind: Lit(
-                                Lit {
-                                    kind: Int(
-                                        1,
-                                    ),
-                                    location: Location {
-                                        start: 8,
-                                        end: 9,
-                                    },
-                                },
-                            ),
-                            location: Location {
-                                start: 8,
-                                end: 9,
-                            },
+                    [],
+                    Ty {
+                        name: "void",
+                        location: Location {
+                            start: 13,
+                            end: 17,
                         },
-                    ),
-                ),
-                location: Location {
-                    start: 0,
-                    end: 10,
-                },
-            },
-            Stmt {
-                kind: Block(
+                    },
                     Block {
                         stmts: [
                             Stmt {
-                                kind: Var(
-                                    Ident {
-                                        name: "b",
-                                        location: Location {
-                                            start: 22,
-                                            end: 23,
-                                        },
-                                    },
-                                    None,
-                                    Some(
-                                        Expr {
-                                            kind: Lit(
-                                                Lit {
-                                                    kind: Int(
-                                                        2,
+                                kind: Decl(
+                                    Decl {
+                                        kind: Var(
+                                            Ident {
+                                                name: "a",
+                                                location: Location {
+                                                    start: 28,
+                                                    end: 29,
+                                                },
+                                            },
+                                            None,
+                                            Some(
+                                                Expr {
+                                                    kind: Lit(
+                                                        Lit {
+                                                            kind: Int(
+                                                                1,
+                                                            ),
+                                                            location: Location {
+                                                                start: 32,
+                                                                end: 33,
+                                                            },
+                                                        },
                                                     ),
                                                     location: Location {
-                                                        start: 26,
-                                                        end: 27,
+                                                        start: 32,
+                                                        end: 33,
                                                     },
                                                 },
                                             ),
-                                            location: Location {
-                                                start: 26,
-                                                end: 27,
-                                            },
+                                        ),
+                                        location: Location {
+                                            start: 24,
+                                            end: 34,
                                         },
-                                    ),
+                                    },
                                 ),
                                 location: Location {
-                                    start: 18,
-                                    end: 28,
+                                    start: 24,
+                                    end: 34,
                                 },
                             },
                             Stmt {
@@ -85,68 +73,135 @@ Ok(
                                     Block {
                                         stmts: [
                                             Stmt {
-                                                kind: Var(
-                                                    Ident {
-                                                        name: "a",
-                                                        location: Location {
-                                                            start: 52,
-                                                            end: 53,
-                                                        },
-                                                    },
-                                                    None,
-                                                    Some(
-                                                        Expr {
-                                                            kind: Lit(
-                                                                Lit {
-                                                                    kind: Int(
-                                                                        4,
+                                                kind: Decl(
+                                                    Decl {
+                                                        kind: Var(
+                                                            Ident {
+                                                                name: "b",
+                                                                location: Location {
+                                                                    start: 54,
+                                                                    end: 55,
+                                                                },
+                                                            },
+                                                            None,
+                                                            Some(
+                                                                Expr {
+                                                                    kind: Lit(
+                                                                        Lit {
+                                                                            kind: Int(
+                                                                                2,
+                                                                            ),
+                                                                            location: Location {
+                                                                                start: 58,
+                                                                                end: 59,
+                                                                            },
+                                                                        },
                                                                     ),
                                                                     location: Location {
-                                                                        start: 56,
-                                                                        end: 57,
+                                                                        start: 58,
+                                                                        end: 59,
                                                                     },
                                                                 },
                                                             ),
-                                                            location: Location {
-                                                                start: 56,
-                                                                end: 57,
-                                                            },
+                                                        ),
+                                                        location: Location {
+                                                            start: 50,
+                                                            end: 60,
                                                         },
-                                                    ),
+                                                    },
                                                 ),
                                                 location: Location {
-                                                    start: 48,
-                                                    end: 58,
+                                                    start: 50,
+                                                    end: 60,
+                                                },
+                                            },
+                                            Stmt {
+                                                kind: Block(
+                                                    Block {
+                                                        stmts: [
+                                                            Stmt {
+                                                                kind: Decl(
+                                                                    Decl {
+                                                                        kind: Var(
+                                                                            Ident {
+                                                                                name: "a",
+                                                                                location: Location {
+                                                                                    start: 96,
+                                                                                    end: 97,
+                                                                                },
+                                                                            },
+                                                                            None,
+                                                                            Some(
+                                                                                Expr {
+                                                                                    kind: Lit(
+                                                                                        Lit {
+                                                                                            kind: Int(
+                                                                                                4,
+                                                                                            ),
+                                                                                            location: Location {
+                                                                                                start: 100,
+                                                                                                end: 101,
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    location: Location {
+                                                                                        start: 100,
+                                                                                        end: 101,
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                        location: Location {
+                                                                            start: 92,
+                                                                            end: 102,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                location: Location {
+                                                                    start: 92,
+                                                                    end: 102,
+                                                                },
+                                                            },
+                                                        ],
+                                                        location: Location {
+                                                            start: 78,
+                                                            end: 112,
+                                                        },
+                                                    },
+                                                ),
+                                                location: Location {
+                                                    start: 78,
+                                                    end: 112,
                                                 },
                                             },
                                         ],
                                         location: Location {
-                                            start: 38,
-                                            end: 64,
+                                            start: 40,
+                                            end: 118,
                                         },
                                     },
                                 ),
                                 location: Location {
-                                    start: 38,
-                                    end: 64,
+                                    start: 40,
+                                    end: 118,
                                 },
                             },
                         ],
                         location: Location {
-                            start: 12,
-                            end: 66,
+                            start: 18,
+                            end: 120,
                         },
                     },
                 ),
                 location: Location {
-                    start: 12,
-                    end: 66,
+                    start: 0,
+                    end: 120,
                 },
             },
         ],
         location: Location {
             start: 0,
-            end: 66,
+            end: 121,
         },
     },
 )

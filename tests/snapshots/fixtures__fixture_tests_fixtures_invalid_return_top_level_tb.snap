@@ -6,12 +6,11 @@ expression: program
 Err(
     [
         ParsingError {
-            kind: TopLevelReturn,
-            location: Span(
-                (
-                    0,
-                    9,
-                ),
+            kind: Custom(
+                "Expected end of file, function declaration.",
+            ),
+            location: Position(
+                0,
             ),
         },
     ],

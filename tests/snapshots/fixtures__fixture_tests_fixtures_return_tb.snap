@@ -5,8 +5,8 @@ expression: program
 ---
 Ok(
     Program {
-        stmts: [
-            Stmt {
+        decls: [
+            TopLevelDecl {
                 kind: Fn(
                     Ident {
                         name: "empty",
@@ -46,7 +46,7 @@ Ok(
                     end: 33,
                 },
             },
-            Stmt {
+            TopLevelDecl {
                 kind: Fn(
                     Ident {
                         name: "with_expression",
